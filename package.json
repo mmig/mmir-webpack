@@ -1,0 +1,49 @@
+{
+  "name": "mmir-webpack",
+  "version": "4.2.0",
+  "keywords": [
+    "mmir",
+    "multimodal",
+    "dialog",
+    "system",
+    "speech",
+    "asr",
+    "tts"
+  ],
+  "author": "russaa",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mmig/mmir-webpack/issues"
+  },
+  "homepage": "https://github.com/mmig/mmir-webpack#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mmig/mmir-webpack.git"
+  },
+  "main": "index.js",
+  "types": "index.d.ts",
+  "directories": {
+    "lib": "./dist"
+  },
+  "devDependencies": {
+    "@types/loader-utils": "^1.1.3",
+    "mmir-lib": "git+https://gitlab-cos.b.dfki.de/mmir/dev_mmir-lib.git#develop/webpack",
+    "webpack": "^4.38.0",
+    "webpack-cli": "^3.3.6",
+    "webpack-dev-server": "^3.7.2"
+  },
+  "scripts": {
+    "build": "webpack",
+    "watch": "webpack --watch",
+    "start": "webpack-dev-server"
+  },
+  "dependencies": {
+    "file-loader": "^2.0.0",
+    "lodash": "^4.17.11",
+    "mmir-tooling": "git+https://gitlab-cos.b.dfki.de/mmir/dev_mmir-tooling.git#develop/mmir_v5",
+    "raw-loader": "^0.5.1",
+    "val-loader": "^1.1.1",
+    "virtual-module-webpack-plugin": "^0.4.1",
+    "worker-loader": "^2.0.0"
+  }
+}
