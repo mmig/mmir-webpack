@@ -3,10 +3,11 @@ import 'mmir-lib';
 
 import { AppConfig , ModulePaths, ModuleId, ModuleConfigOptions, SettingsOptions, RuntimeConfiguration, PluginOptions, ControllerOptions, HelperOptions, ModelOptions } from 'mmir-tooling';
 
-export function apply(webpackInstance: any, webpackConfig: any, mmirAppConfig: WebpackAppConfig): void;
+declare function apply(webpackInstance: any, webpackConfig: any, mmirAppConfig: WebpackAppConfig): void;
 
 /**
  * @example
+ * ```
  * var appConfig = {
  * 	//path to directory that contains classic mmir directory structure
  * 	resourcesPath: 'src/mmir',
@@ -29,6 +30,7 @@ export function apply(webpackInstance: any, webpackConfig: any, mmirAppConfig: W
  * 	helpers: false,
  * 	//...
  * }
+ * ```
  */
 export interface WebpackAppConfig extends AppConfig {
 
@@ -48,7 +50,9 @@ export interface WebpackAppConfig extends AppConfig {
 	 * The prefix "mmirf/" can be omitted.
 	 *
 	 * @example
+	 * ```
 	 * includeModules: ['jsccGen', 'mmirf/jisonGen'],
+	 * ```
 	 */
 	includeModules?: Array<ModuleId>;
 	/**
@@ -68,7 +72,9 @@ export interface WebpackAppConfig extends AppConfig {
 	 * The prefix "mmirf/" can be omitted.
 	 *
 	 * @example
+	 * ```
 	 * loadAfterInit: ['mmirf/grammar/testing'],
+	 * ```
 	 */
 	loadAfterInit?: Array<ModuleId>;
 
