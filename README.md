@@ -7,8 +7,27 @@ Basic steps for integrating [mmir][1]:
 
  * install [mmir-lib][1] via `npm`
  * install [mmir-webpack][3] via `npm`
- * create `webpack` configuration where `mmir-webpack`
-   configures/extends the apps base webpack-configuration for `mmir`
+ * create or use existing `webpack` configuration where `mmir-webpack`
+   configures/extends the apps base webpack-configuration for `mmir`, similar to
+	 ```
+	 require('mmir-webpack')(webpackInstance, origWebpackConfig, mmirWebpackConfig)
+	 ```
+
+# Prerequisites
+
+ * Node.js
+ * `webpack` built application with `webpack` version 3.x - 4.x
+
+
+### Installation
+
+Install `mmir-webpack` via `npm`.
+
+
+# API Documentation
+
+See generated [webpack build API documentation][5] and details below.
+
 
 # Example
 
@@ -37,7 +56,7 @@ module.exports = appWebpackConfig;
 
 ```
 
-See also file [webpack.config.js](./webpack-config.js) as and example.
+See also file [webpack.config.js](./webpack-config.js) as an example.
 
 
 --
@@ -46,3 +65,4 @@ See also file [webpack.config.js](./webpack-config.js) as and example.
 [2]: https://github.com/mmig/mmir-tooling
 [3]: https://github.com/mmig/mmir-webpack
 [4]: https://webpack.js.org/
+[5]: https://mmig.github.io/mmir-webpack/modules/_index_d_.html
