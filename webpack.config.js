@@ -161,6 +161,8 @@ const mmirAppConfig = {
 // 	}
 };
 
-require('./index')(webpack, webpackConfig, mmirAppConfig);
+var modWebpackConfig = require('./index')(webpack, webpackConfig, mmirAppConfig);
 
-module.exports = webpackConfig;
+//NOTE: require('./index')(...) returns modified webpackConfig, so actually
+//      webpackConfig === modWebpackConfig
+module.exports = modWebpackConfig;
