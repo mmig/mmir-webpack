@@ -460,7 +460,8 @@ function apply(webpackInstance, webpackConfig, mmirAppConfig){
 
 	if(typeof mmirAppConfig === 'string'){
 		mmirAppConfig = JSON.parse(mmirAppConfig);
-	} else if(!mmirAppConfig){
+	}
+ else if(!mmirAppConfig){
 		mmirAppConfig = {};
 	}
 
@@ -518,6 +519,8 @@ function apply(webpackInstance, webpackConfig, mmirAppConfig){
 
 	//add webworker loader configuration
 	require('./utils/webpack-worker-loader-utils').apply(webpackConfig, rootDir, useRulesForLoaders);
-}
+
+	return webpackConfig;
+};
 
 module.exports = apply;
