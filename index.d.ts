@@ -1,95 +1,185 @@
-/// <reference types="mmir-lib" />
-import 'mmir-lib';
 
 import { AppConfig , ModulePaths, ModuleId, ModuleConfigOptions, SettingsOptions, RuntimeConfiguration, PluginOptions, ControllerOptions, HelperOptions, ModelOptions } from 'mmir-tooling';
 
-declare function apply(webpackInstance: any, webpackConfig: any, mmirAppConfig: WebpackAppConfig): void;
+import { Configuration as WebpackConfiguration } from 'webpack';
+import * as webpack from 'webpack';
 
 /**
- * @example
- * ```
- * var appConfig = {
- * 	//path to directory that contains classic mmir directory structure
- * 	resourcesPath: 'src/mmir',
- * 	resourcesPathOptions: {
- * 		//for included models, controllers, helpers: convert old-style
- * 		// implementations by adding an export statement
- * 		addModuleExport: true,
- * 		//exlude model implementations, and do not include JSON grammar resources
- * 		exclude: ['models', 'settings/grammar']
- * 	},
- * 	//utilize jQuery in mmir instead of (less backwards compatible)
- * 	// alternative implementations (npm package jquery needs to be installed!)
- * 	jquery: true,
- * 	//specify language for runtime configuration (== configuration.json)
- * 	configuration: {language: 'en'},
- * 	//do include controller implementation found within resourcesPath
- * 	// (NOTE: this is the default behavior)
- * 	controllers: true,
- * 	//do NOT include helper implemenations found within resourcesPath
- * 	helpers: false,
- * 	//...
- * }
- * ```
+ * `mmir-webpack` integrates `mmir-lib` into _webpack_-built apps:
+ *
+ * include `mmir-lib`, configure _mmir_, include/compile/generate _mmir_ resources
+ * (e.g. grammars, state-models), _mmir_-plugins, ...
+ *
+ * @see [[apply]]
+ * @module mmir-webpack
  */
-export interface WebpackAppConfig extends AppConfig {
-
-	/** specifying additional (or replacing) module paths */
-	paths?: ModulePaths;
+declare module 'mmir-webpack' {
 
 	/**
-	 * disable logging in mmir runtime:
-	 * suppresses all logging-output by replacing mmirf/logger with an empty logger implementation
+	 * apply the `mmirWebpackConfig` configuration the (existing) _webpack_
+	 * configuration `webpackConfig`.
+	 *
+	 * @param webpackInstance 		the _webpack_ instance, i.e. `require('webpack')` (supports _webpack_ versions 3.x - 4.x)
+	 *
+	 * @param webpackConfig 			the (existing) _webpack_ configuration for the app: will be extended/modified with _mmir_
+	 * 															_webpack_ configuration\
+	 * 									 						NOTE this (modified) object will also be returned by this function, i.e. it is an INOUT parameter
+	 *
+	 * @param mmirWebpackConfig 	the _mmir_ configuration
+	 *
+	 * @returns the modified (paramater) `webpackConfig`
 	 */
-	disableLogging?: boolean;
+	function apply(webpackInstance: typeof webpack, webpackConfig: WebpackConfiguration, mmirWebpackConfig: WebpackAppConfig): WebpackConfiguration;
+	export = apply;
 
 	/**
-	 * include a (optional) module, e.g. will be available via
-	 * <code>mmir.require()</code>.
-	 *
-	 * The prefix "mmirf/" can be omitted.
-	 *
 	 * @example
 	 * ```
-	 * includeModules: ['jsccGen', 'mmirf/jisonGen'],
+	 * var appConfig = {
+	 * 	//path to directory that contains classic mmir directory structure
+	 * 	resourcesPath: 'src/mmir',
+	 * 	resourcesPathOptions: {
+	 * 		//for included models, controllers, helpers: convert old-style
+	 * 		// implementations by adding an export statement
+	 * 		addModuleExport: true,
+	 * 		//exlude model implementations, and do not include JSON grammar resources
+	 * 		exclude: ['models', 'settings/grammar']
+	 * 	},
+	 * 	//utilize jQuery in mmir instead of (less backwards compatible)
+	 * 	// alternative implementations (npm package jquery needs to be installed!)
+	 * 	jquery: true,
+	 * 	//specify language for runtime configuration (== configuration.json)
+	 * 	configuration: {language: 'en'},
+	 * 	//do include controller implementation found within resourcesPath
+	 * 	// (NOTE: this is the default behavior)
+	 * 	controllers: true,
+	 * 	//do NOT include helper implemenations found within resourcesPath
+	 * 	helpers: false,
+	 * 	//...
+	 * }
 	 * ```
 	 */
-	includeModules?: Array<ModuleId>;
-	/**
-	 * include module AND do load it BEFORE initializing the mmir library;
-	 * the module will also be available via <code>mmir.require()</code>.
-	 *
-	 * The prefix "mmirf/" can be omitted.
-	 *
-	 * @example
-	 * loadBeforeInit: ['mmirf/polyfill'],
-	 */
-	loadBeforeInit?: Array<ModuleId>;
-	/**
-	 * include module AND do load it AFTER initializing the mmir library;
-	 * the module will also be available via <code>mmir.require()</code>.
-	 *
-	 * The prefix "mmirf/" can be omitted.
-	 *
-	 * @example
-	 * ```
-	 * loadAfterInit: ['mmirf/grammar/testing'],
-	 * ```
-	 */
-	loadAfterInit?: Array<ModuleId>;
+	export interface WebpackAppConfig extends AppConfig {
 
-	config?: ModuleConfigOptions;
+		/** specifying additional (or replacing) module paths */
+		paths?: ModulePaths;
 
-	jquery?: boolean;
-	settings?: SettingsOptions;
-	configuration?: RuntimeConfiguration;
+		/**
+		 * disable logging in mmir runtime:
+		 * suppresses all logging-output by replacing mmirf/logger with an empty logger implementation
+		 */
+		disableLogging?: boolean;
 
-	includePlugins?: Array<PluginOptions>;
+		/**
+		 * include a (optional) module, e.g. will be available via
+		 * <code>mmir.require()</code>.
+		 *
+		 * The prefix "mmirf/" can be omitted.
+		 *
+		 * @example
+		 * ```
+		 * includeModules: ['jsccGen', 'mmirf/jisonGen'],
+		 * ```
+		 */
+		includeModules?: Array<ModuleId>;
+		/**
+		 * include module AND do load it BEFORE initializing the mmir library;
+		 * the module will also be available via <code>mmir.require()</code>.
+		 *
+		 * The prefix "mmirf/" can be omitted.
+		 *
+		 * @example
+		 * loadBeforeInit: ['mmirf/polyfill'],
+		 */
+		loadBeforeInit?: Array<ModuleId>;
+		/**
+		 * include module AND do load it AFTER initializing the mmir library;
+		 * the module will also be available via <code>mmir.require()</code>.
+		 *
+		 * The prefix "mmirf/" can be omitted.
+		 *
+		 * @example
+		 * ```
+		 * loadAfterInit: ['mmirf/grammar/testing'],
+		 * ```
+		 */
+		loadAfterInit?: Array<ModuleId>;
 
-	controllers?: ControllerOptions | boolean;
-	helpers?: HelperOptions | boolean;
-	models?: ModelOptions | boolean;
+		/**
+		 * Configuration for mmir modules (analogous to requirejs' module config entries)
+		 */
+		config?: ModuleConfigOptions;
 
-	/** configuration for webpack plugins (for internal use) */
-	webpackPlugins?: any[];
+		/**
+		 * If `jquery` is included:
+		 * `mmir` will automatically use `jquery` utililities instead of alternative
+		 * implementations.
+		 *
+		 * NOTE: the `jquery` library must be loaded/included separately; this will
+		 *       only configure `mmir` to use `jquery`, but not include the library itself.
+		 */
+		jquery?: boolean;
+
+		/**
+		 * Specify how (mmir) configuration and settings should be parsed/included,
+		 * and/or specify additional settings that should be included.
+		 *
+		 * The `mmir` configuration/settings are the resources that are by default
+		 * located in the mmir `config/` directory
+		 * (with exception of the `states` sub-directory; for those instead use [[WebpackAppConfig.states]]):
+		 *  ```bash
+		 *  config/
+		 *        /languages/
+		 *                  /<lang>/
+		 *                         /grammar.json
+		 *                         /dictionary.json
+		 *                         /speech.json
+		 *        /states/
+		 *               /input.xml
+		 *               /dialog.xml
+		 *        /configuration.json
+		 * ```
+		 */
+		settings?: SettingsOptions;
+		/**
+		 * Specify additional (mmir) runtime configuration values,
+		 * e.g. in addition to `config/configuration.json`.
+		 *
+		 * In case of conflicts, these settings will override settings in
+		 * `config/configuration.json`,
+		 */
+		configuration?: RuntimeConfiguration;
+
+		/**
+		 * Specify and configure mmir-plugins that should be included.
+		 */
+		includePlugins?: Array<PluginOptions>;
+
+		/**
+		 * Specify how (mmir) controller implementations should be parsed/included,
+		 * and/or specify additional controllers that should be included.
+		 *
+		 * If `false`, (mmir) controllers will be excluded/ignored.
+		 */
+		controllers?: ControllerOptions | boolean;
+		/**
+		 * Specify how (mmir) helper implementations (for mmir controllers)
+		 * should be parsed/included, and/or specify additional helpers that
+		 * should be included.
+		 *
+		 * If `false`, helpers will be excluded/ignored.
+		 */
+		helpers?: HelperOptions | boolean;
+		/**
+		 * Specify how (mmir) data model implementations should be parsed/included,
+		 * and/or specify additional data models that should be included.
+		 *
+		 * If `false`, data models will be excluded/ignored.
+		 */
+		models?: ModelOptions | boolean;
+
+		/** configuration for webpack plugins (for internal use) */
+		webpackPlugins?: any[];
+	}
+
 }
