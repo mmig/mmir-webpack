@@ -26,7 +26,7 @@ Install `mmir-webpack` via `npm`.
 
 # API Documentation
 
-See generated [webpack build API documentation][5] and details below.
+See generated [API documentation][5] (or more detailed [HTML][6] documentation) and details below.
 
 
 # Example
@@ -65,4 +65,5 @@ See also file [webpack.config.js](./webpack-config.js) as an example.
 [2]: https://github.com/mmig/mmir-tooling
 [3]: https://github.com/mmig/mmir-webpack
 [4]: https://webpack.js.org/
-[5]: https://mmig.github.io/mmir-webpack/modules/_index_d_.html
+[5]: https://github.com/mmig/mmir-webpack/tree/master/docs/modules
+[6]: https://mmig.github.io/mmir/api-ts/modules/mmir_webpack.html
