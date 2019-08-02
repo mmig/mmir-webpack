@@ -9,8 +9,6 @@
 include `mmir-lib`, configure _mmir_, include/compile/generate _mmir_ resources
 (e.g. grammars, state-models), _mmir_-plugins, ...
 
-**`see`** [apply](../interfaces/mmir_lib.requirejs.md#apply)
-
 **`module`** mmir-webpack
 
 ## Callable

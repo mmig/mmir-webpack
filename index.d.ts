@@ -40,7 +40,6 @@ declare function mmirWebpackFunc(webpackInstance: typeof webpack, webpackConfig:
  * include `mmir-lib`, configure _mmir_, include/compile/generate _mmir_ resources
  * (e.g. grammars, state-models), _mmir_-plugins, ...
  *
- * @see [[apply]]
  * @module mmir-webpack
  */
 declare namespace mmirWebpackFunc {
