@@ -1,8 +1,38 @@
+/**
+ * `mmir-webpack` integrates `mmir-lib` into _webpack_-built apps
+ *
+ * @module mmir-webpack
+ */
+/** <dummy comment: required for typedoc to correctly interpret above @module annotation> */
 
 import { AppConfig , ModulePaths, ModuleId, ModuleConfigOptions, SettingsOptions, RuntimeConfiguration, PluginOptions, ControllerOptions, HelperOptions, ModelOptions } from 'mmir-tooling';
 
 import { Configuration as WebpackConfiguration } from 'webpack';
 import * as webpack from 'webpack';
+
+/**
+ *
+ * @module mmir-webpack
+ */
+export = mmirWebpackFunc;
+
+/**
+ * apply the `mmirWebpackConfig` configuration the (existing) _webpack_
+ * configuration `webpackConfig`.
+ *
+ * @param webpackInstance 		the _webpack_ instance, i.e. `require('webpack')` (supports _webpack_ versions 3.x - 4.x)
+ *
+ * @param webpackConfig 			the (existing) _webpack_ configuration for the app: will be extended/modified with _mmir_
+ * 															_webpack_ configuration\
+ * 									 						NOTE this (modified) object will also be returned by this function, i.e. it is an INOUT parameter
+ *
+ * @param mmirWebpackConfig 	the _mmir_ configuration
+ *
+ * @returns the modified (paramater) `webpackConfig`
+ *
+ * @module mmir-webpack
+ */
+declare function mmirWebpackFunc(webpackInstance: typeof webpack, webpackConfig: WebpackConfiguration, mmirWebpackConfig: mmirWebpackFunc.WebpackAppConfig): WebpackConfiguration;
 
 /**
  * `mmir-webpack` integrates `mmir-lib` into _webpack_-built apps:
@@ -13,24 +43,7 @@ import * as webpack from 'webpack';
  * @see [[apply]]
  * @module mmir-webpack
  */
-declare module 'mmir-webpack' {
-
-	/**
-	 * apply the `mmirWebpackConfig` configuration the (existing) _webpack_
-	 * configuration `webpackConfig`.
-	 *
-	 * @param webpackInstance 		the _webpack_ instance, i.e. `require('webpack')` (supports _webpack_ versions 3.x - 4.x)
-	 *
-	 * @param webpackConfig 			the (existing) _webpack_ configuration for the app: will be extended/modified with _mmir_
-	 * 															_webpack_ configuration\
-	 * 									 						NOTE this (modified) object will also be returned by this function, i.e. it is an INOUT parameter
-	 *
-	 * @param mmirWebpackConfig 	the _mmir_ configuration
-	 *
-	 * @returns the modified (paramater) `webpackConfig`
-	 */
-	function apply(webpackInstance: typeof webpack, webpackConfig: WebpackConfiguration, mmirWebpackConfig: WebpackAppConfig): WebpackConfiguration;
-	export = apply;
+declare namespace mmirWebpackFunc {
 
 	/**
 	 * @example
