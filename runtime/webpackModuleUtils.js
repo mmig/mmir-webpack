@@ -3,30 +3,30 @@ var core = require('mmirf/core');
 
 var defaultConfig = {
 
-  /** @memberOf mmir.require.config */
+	/** @memberOf mmir.require.config */
 	baseUrl: './',
 
 	//configurations for the modules:
 	config: {
 
 		/** @memberOf mmir.require.config.moduleConfig */
-	    'mmirf/inputManager': {
-	        modelUri: 'config/states/input.xml',
-	        // simple | extended
-	        mode: 'extended'
-			},
+		'mmirf/inputManager': {
+				modelUri: 'config/states/input.xml',
+				// simple | extended
+				mode: 'extended'
+		},
 		/** @memberOf mmir.require.config.moduleConfig */
-	    'mmirf/dialogManager': {
-	        modelUri: 'config/states/dialog.xml',
-	        // simple | extended
-	        mode: 'extended'
-	    },
-	    'mmirf/simpleViewEngine': {
-	    	//ID attribute when inserting simpleViewEngine style:
-	    	cssId: 'simple-view',
-	    	//the path to the css file for the simpleViewEngine style:
-	    	cssUrl: 'mmirf/vendor/styles/simpleViewLayout.css'
-	    }
+		'mmirf/dialogManager': {
+				modelUri: 'config/states/dialog.xml',
+				// simple | extended
+				mode: 'extended'
+		},
+		'mmirf/simpleViewEngine': {
+			//ID attribute when inserting simpleViewEngine style:
+			cssId: 'simple-view',
+			//the path to the css file for the simpleViewEngine style:
+			cssUrl: 'mmirf/vendor/styles/simpleViewLayout.css'
+		}
 
 	}
 };
@@ -81,7 +81,7 @@ module.exports = {
 						}, 0);
 					}
 				} else {
-				 	result = __webpack_require__(deps);
+					result = __webpack_require__(deps);
 				}
 
 			} catch(err){

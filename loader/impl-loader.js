@@ -17,5 +17,5 @@ module.exports = function(content, map, meta) {
 	var implFile = fileUtils.normalizePath(this.resource);
 
 	implGen.compile(content, implFile, options, callback, map, meta);
-  return;
+	return;
 };

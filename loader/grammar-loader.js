@@ -17,7 +17,7 @@ module.exports = function(content, map, meta) {
 	var grammarFile = fileUtils.normalizePath(this.resource);
 
 	grammarGen.compile(content, grammarFile, options, callback, map, meta);
-  return;
+	return;
 };
 
 //HACK force prevention of json-loader

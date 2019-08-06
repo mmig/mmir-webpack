@@ -4,9 +4,9 @@
   "exclude": ["node_modules/!(mmir-)*/**"],
   "excludePrivate": true,
   "readme": "none",
-	"mode": "modules",
+  "mode": "modules",
   "theme": "markdown",
   "out": "docs",
-	"hideSources": true,
-	"moduleResolution": "node"
+  "hideSources": true,
+  "moduleResolution": "node"
 }

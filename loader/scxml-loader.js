@@ -13,5 +13,5 @@ module.exports = function(content, map, meta) {
 	var scxmlFile = fileUtils.normalizePath(this.resource);
 
 	scxmlGen.compile(content, scxmlFile, options, callback, map, meta);
-  return;
+	return;
 };

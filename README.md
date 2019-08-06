@@ -9,9 +9,9 @@ Basic steps for integrating [mmir][1]:
  * install [mmir-webpack][3] via `npm`
  * create or use existing `webpack` configuration where `mmir-webpack`
    configures/extends the apps base webpack-configuration for `mmir`, similar to
-	 ```
-	 require('mmir-webpack')(webpackInstance, origWebpackConfig, mmirWebpackConfig)
-	 ```
+   ```
+   require('mmir-webpack')(webpackInstance, origWebpackConfig, mmirWebpackConfig)
+   ```
 
 # Prerequisites
 

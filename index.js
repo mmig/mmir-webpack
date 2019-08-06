@@ -125,8 +125,8 @@ var createModuleRules = function(mmirAppConfig){
 			use: {
 				loader: 'val-loader',
 				options: {
-          appConfigCode: mmirAppConfigContent
-        }
+					appConfigCode: mmirAppConfigContent
+				}
 			}
 		},
 
@@ -325,8 +325,8 @@ var createPlugins = function(webpackInstance, alias, mmirAppConfig){
 		// })
 
 		// new EncodingPlugin({
-    //   encoding: 'utf16le'
-    // }),
+	//   encoding: 'utf16le'
+	// }),
 
 	];
 
@@ -460,8 +460,7 @@ function apply(webpackInstance, webpackConfig, mmirAppConfig){
 
 	if(typeof mmirAppConfig === 'string'){
 		mmirAppConfig = JSON.parse(mmirAppConfig);
-	}
- else if(!mmirAppConfig){
+	} else if(!mmirAppConfig){
 		mmirAppConfig = {};
 	}
 

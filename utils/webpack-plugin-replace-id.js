@@ -6,10 +6,10 @@ var dir = __dirname;
 
 var reNormalize = path.sep !== '/'? new RegExp(path.sep.replace(/\\/g, '\\\\'), 'g') : null;
 var idFromPath = function(path){
-  if(reNormalize){
-    path = path.replace(reNormalize, '/');
-  }
-  return path;
+	if(reNormalize){
+		path = path.replace(reNormalize, '/');
+	}
+	return path;
 }
 
 function getModId(_modPaths, path, fileExtensions, originalId) {
