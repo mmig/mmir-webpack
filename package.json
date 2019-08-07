@@ -35,7 +35,7 @@
     "mmir-lib": "git+https://github.com/mmig/mmir-lib.git",
     "typedoc": "^0.15.0",
     "typedoc-plugin-external-module-name": "^2.1.0",
-    "typedoc-plugin-markdown": "^2.1.0",
+    "typedoc-plugin-markdown": "^2.1.1",
     "webpack": "^4.39.1",
     "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.7.2"
