@@ -1,5 +1,8 @@
-mmir-webpack
+[mmir-webpack][3]
 ========
+
+[![MIT license](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/mmig/mmir-webpack)
 
 Integration for [mmir][1] in [webpack][4] built apps.
 
