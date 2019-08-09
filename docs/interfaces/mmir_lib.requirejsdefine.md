@@ -1,39 +1,33 @@
 > **[mmir-webpack 5.1.0](../README.md)**
 
-[Globals](../README.md) / [mmir-lib](../modules/mmir_lib.md) / [RequireJs](mmir_lib.requirejs.md) /
+[Globals](../README.md) / [mmir-lib](../modules/mmir_lib.md) / [RequireJsDefine](mmir_lib.requirejsdefine.md) /
 
-# Interface: RequireJs
+# Interface: RequireJsDefine
 
 ## Hierarchy
 
 * `Function`
 
-  * **RequireJs**
+  * **RequireJsDefine**
 
 ## Index
 
 ### Properties
 
-* [Function](mmir_lib.requirejs.md#function)
-* [arguments](mmir_lib.requirejs.md#arguments)
-* [caller](mmir_lib.requirejs.md#caller)
-* [config](mmir_lib.requirejs.md#config)
-* [defined](mmir_lib.requirejs.md#defined)
-* [isBrowser](mmir_lib.requirejs.md#isbrowser)
-* [length](mmir_lib.requirejs.md#length)
-* [name](mmir_lib.requirejs.md#name)
-* [prototype](mmir_lib.requirejs.md#prototype)
-* [specified](mmir_lib.requirejs.md#specified)
-* [toUrl](mmir_lib.requirejs.md#tourl)
-* [undef](mmir_lib.requirejs.md#undef)
+* [Function](mmir_lib.requirejsdefine.md#function)
+* [arguments](mmir_lib.requirejsdefine.md#arguments)
+* [caller](mmir_lib.requirejsdefine.md#caller)
+* [length](mmir_lib.requirejsdefine.md#length)
+* [name](mmir_lib.requirejsdefine.md#name)
+* [prototype](mmir_lib.requirejsdefine.md#prototype)
 
 ### Methods
 
-* [__@hasInstance](mmir_lib.requirejs.md#__@hasinstance)
-* [apply](mmir_lib.requirejs.md#apply)
-* [bind](mmir_lib.requirejs.md#bind)
-* [call](mmir_lib.requirejs.md#call)
-* [toString](mmir_lib.requirejs.md#tostring)
+* [__@hasInstance](mmir_lib.requirejsdefine.md#__@hasinstance)
+* [apply](mmir_lib.requirejsdefine.md#apply)
+* [bind](mmir_lib.requirejsdefine.md#bind)
+* [call](mmir_lib.requirejsdefine.md#call)
+* [toString](mmir_lib.requirejsdefine.md#tostring)
 
 ## Properties
 
@@ -56,44 +50,6 @@ ___
 • **caller**: *`Function`*
 
 *Inherited from void*
-
-___
-
-###  config
-
-• **config**: *function*
-
-#### Type declaration:
-
-▸ (`configuration`: any): *void*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`configuration` | any |
-
-___
-
-###  defined
-
-• **defined**: *function*
-
-#### Type declaration:
-
-▸ (`id`: any): *any*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`id` | any |
-
-___
-
-###  isBrowser
-
-• **isBrowser**: *boolean*
 
 ___
 
@@ -120,54 +76,6 @@ ___
 • **prototype**: *any*
 
 *Inherited from void*
-
-___
-
-###  specified
-
-• **specified**: *function*
-
-#### Type declaration:
-
-▸ (`id`: any): *any*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`id` | any |
-
-___
-
-###  toUrl
-
-• **toUrl**: *function*
-
-#### Type declaration:
-
-▸ (`moduleNamePlusExt`: any): *any*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`moduleNamePlusExt` | any |
-
-___
-
-###  undef
-
-• **undef**: *function*
-
-#### Type declaration:
-
-▸ (`id`: any): *void*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`id` | any |
 
 ## Methods
 
