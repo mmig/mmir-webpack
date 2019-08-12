@@ -59,7 +59,7 @@ module.exports = appWebpackConfig;
 
 ```
 
-See also file [webpack.config.js](./webpack-config.js) as an example.
+See also file [webpack.config.js](./webpack.config.js) for more examples.
 
 
 --
