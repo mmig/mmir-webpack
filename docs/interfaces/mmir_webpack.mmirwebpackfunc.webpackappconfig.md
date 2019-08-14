@@ -1,4 +1,4 @@
-> **[mmir-webpack 5.1.0](../README.md)**
+> **[mmir-webpack 5.2.0](../README.md)**
 
 [Globals](../README.md) / [mmir-webpack](../modules/mmir_webpack.md) / [mmirWebpackFunc](../modules/mmir_webpack.mmirwebpackfunc.md) / [WebpackAppConfig](mmir_webpack.mmirwebpackfunc.webpackappconfig.md) /
 

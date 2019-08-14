@@ -1,4 +1,4 @@
-> **[mmir-webpack 5.1.0](../README.md)**
+> **[mmir-webpack 5.2.0](../README.md)**
 
 [Globals](../README.md) / [mmir-lib](../modules/mmir_lib.md) / [Pos](mmir_lib.pos.md) /
 
