@@ -35,10 +35,10 @@
     "mmir-lib": "^5.2.0",
     "typedoc": "^0.15.0",
     "typedoc-plugin-external-module-name": "^2.1.0",
-    "typedoc-plugin-markdown": "^2.1.4",
-    "webpack": "^4.39.3",
-    "webpack-cli": "^3.3.7",
-    "webpack-dev-server": "^3.8.0"
+    "typedoc-plugin-markdown": "^2.2.6",
+    "webpack": "^4.40.2",
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.8.1"
   },
   "scripts": {
     "build": "webpack",
@@ -49,10 +49,10 @@
     "gen-doc": "cross-var typedoc --name \"$npm_package_name $npm_package_version\" index.d.ts"
   },
   "dependencies": {
-    "file-loader": "^2.0.0",
+    "file-loader": "^4.2.0",
     "lodash": "^4.17.11",
     "mmir-tooling": "^5.2.0",
-    "raw-loader": "^0.5.1",
+    "raw-loader": "^3.1.0",
     "val-loader": "^1.1.1",
     "virtual-module-webpack-plugin": "^0.4.1",
     "worker-loader": "^2.0.0"
