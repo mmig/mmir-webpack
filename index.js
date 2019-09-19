@@ -4,6 +4,7 @@ const _ = require('lodash');
 
 var fileUtils = require('mmir-tooling/utils/filepath-utils');
 var createBuildConfig = require('mmir-tooling/tools/create-build-config');
+var grammarUtils = require('mmir-tooling/grammar/grammar-utils');
 
 var appConfigUtils = require('./utils/webpack-module-init-gen.js');
 
@@ -53,15 +54,7 @@ var enableJQuery = function(mmirAppConfig){
 	paths['mmirf/util'] = 'tools/util_jquery';
 }
 
-var createModuleRules = function(mmirAppConfig){
-
-	if(mmirAppConfig.jquery){
-		enableJQuery(mmirAppConfig);
-	}
-
-	// var resourcesConfig = require('./webpack-resources-config');
-
-	var buildConfig = createBuildConfig(mmirAppConfig, resourcesConfig);
+var createModuleRules = function(mmirAppConfig, buildConfig){
 
 	var appRootDir = mmirAppConfig.rootPath;
 
@@ -126,6 +119,14 @@ var createModuleRules = function(mmirAppConfig){
 				loader: 'val-loader',
 				options: {
 					appConfigCode: mmirAppConfigContent
+					//TODO add: dependencies: [...] -> resolve file-paths via alias for:
+					// 				mmirAppConfig.includeModules
+					// 				mmirAppConfig.loadAfterInit
+					// 				mmirAppConfig.loadBeforeInit
+					// 				mmirAppConfig.runtimeSettings
+					// 					-> 1. need to check if configuration.json (or other JSON-configs) & via mmir-build.config.js and add those as file-dependencies
+					// 					   2. need check all entries "mmirf/settings/[dictionary|grammar|speech]"
+					// 					   3. evaluate directories.json?
 				}
 			}
 		},
@@ -240,11 +241,13 @@ var createModuleRules = function(mmirAppConfig){
 	return moduleRules;
 }
 
-var createPlugins = function(webpackInstance, alias, mmirAppConfig){
+var createPlugins = function(webpackInstance, alias, mmirAppConfig, buildConfig){
 
 	// var CResolver = require('./webpack-plugin-custom-resolver.js');
 
 	// var EncodingPlugin = require('webpack-encoding-plugin');
+
+	// console.log('buildConfig', buildConfig)
 
 	var plugins = [
 
@@ -315,20 +318,83 @@ var createPlugins = function(webpackInstance, alias, mmirAppConfig){
 		),
 
 		// //TEST try to limit/tell webpack the restrictions of require() calls in order to avoid compilation warnings
-		// new webpack.ContextReplacementPlugin(/^mmirf\/()/, (context) => {
-		//   if ( !/\/moment\//.test(context.context) ) return;
+		// // TODO enable: limit includes for mmir-lib/lib/env/media/*.js: either by require('./'+<var>) or require('../env/media/'+<var>) or (internal) require('.')
+		// new webpackInstance.ContextReplacementPlugin(/^\.\.?\/?(env\/media)?$/, (context) => {
+		//   // if ( !/[\\/]mmir-lib[\\/]lib[\\/](env[\\/]media|manager)$/.test(context.context) ) return;
+		// 	var envMedia = path.resolve(rootDir, 'env', 'media');
+		// 	if(path.resolve(context.context, context.request) !== envMedia) return;
+		//
+		// 	console.log('------------------------------ mmir-lib/env/media/* -> ', context);//, alias)
+		//
+		// 	//TODO create list of required media modules & RegExp outside closure
+		// 	var includeMediaModules = ['audiotts', 'webAudio', 'ttsMary', 'webspeechAudioInput', 'webMicLevels'];
+		// 	var re = new RegExp('^\\./('+ includeMediaModules.join('|') +')(\.js)?$');
 		//
 		//   Object.assign(context, {
-		//     regExp: /^\.\/\w+/,
-		//     request: '../../locale' // resolved relatively
+		// 		context: envMedia,	//<- normalize: set context to env/media directory
+		//     regExp: re, ///^\.\/(audiotts|webAudio|ttsMary|webspeechAudioInput|webMicLevels)$/,//<- regExp for included modules of env/media
+		// 		request: '.' //<- trigger evaluation of files-names via regExp in env/media
 		//   });
-		// })
+		// }),
 
 		// new EncodingPlugin({
-	//   encoding: 'utf16le'
-	// }),
+		//   encoding: 'utf16le'
+		// }),
 
 	];
+
+	//configure dependencies within WebWorker in case async-execution for grammar is enable for at least 1 grammar:
+	// create resource/ID mapping for including async-exec grammars in WebWorker script
+	if(buildConfig.grammars && buildConfig.grammars.length > 0){
+
+		var execAsyncGrammarIdMap = {};
+		var isAsyncExec = false;
+		buildConfig.grammars.forEach(function(g){
+			if(g.async){
+				isAsyncExec = true;
+				execAsyncGrammarIdMap['./'+g.id] = grammarUtils.toAliasId(g);
+			}
+		});
+
+		//only create mapping function & plugin instance etc, if at least 1 async-exec grammar is present:
+		if(isAsyncExec){
+
+			var ContextElementDependency = require('webpack/lib/dependencies/ContextElementDependency');
+			var createAsyncGrammarContextMap = (_fs, callback) => {
+				// console.log('###################### ContextReplacementPlugin.newContentCreateContextMap() -> ', callback)
+				callback(null, execAsyncGrammarIdMap);
+			};
+
+			plugins.push(
+				//TODO for async-grammar-exec: do include all referenced compiled grammars in its web-worker script
+				new webpackInstance.ContextReplacementPlugin(
+					/^.\/\<mmir-async-grammar-exec\>/, //<- placeholder URI in mmir-lib's asyncGrammarWorker for loading/including async-exec grammars in WebWorker script
+
+					function(context){
+
+						//NOTE adapted from ContextReplacementPlugin's handling of map-option
+						context.resolveDependencies = (fs, options, callback) => {
+							createAsyncGrammarContextMap(fs, (err, map) => {
+								if (err) return callback(err);
+								const dependencies = Object.keys(map).map(key => {
+									return new ContextElementDependency(
+										map[key] + options.resourceQuery,
+										key
+									);
+								});
+								callback(null, dependencies);
+							});
+						};
+
+						Object.assign(context, {
+							//NOTE need any directory in order to trigger parsing of directory which in turn allows to attach multiple ContextElementDependency
+							request: __dirname
+					  });
+					}
+				)//END: new ...
+			);//END: plugins.push(...
+		}//END: if(isAsyncExec)
+	}//END: if(createAsyncGrammarContextMap)
 
 	if(mmirAppConfig.webpackPlugins){
 		mmirAppConfig.webpackPlugins.forEach(function(p){
@@ -464,9 +530,17 @@ function apply(webpackInstance, webpackConfig, mmirAppConfig){
 		mmirAppConfig = {};
 	}
 
+	if(mmirAppConfig.jquery){
+		enableJQuery(mmirAppConfig);
+	}
+
+	// var resourcesConfig = require('./webpack-resources-config');
+
+	var buildConfig = createBuildConfig(mmirAppConfig, resourcesConfig);
+
 	//add loader configurations:
 	// (NOTE must do this before creating alias definition as some loaders may add alias mappings to mmirAppConfig)
-	var moduleRules = createModuleRules(mmirAppConfig);
+	var moduleRules = createModuleRules(mmirAppConfig, buildConfig);
 	if(!useRulesForLoaders){
 		moduleRules.forEach(function(rule){
 			if(rule.type){
@@ -507,7 +581,7 @@ function apply(webpackInstance, webpackConfig, mmirAppConfig){
 
 
 	//add plugins
-	var plugins = createPlugins(webpackInstance, alias, mmirAppConfig);
+	var plugins = createPlugins(webpackInstance, alias, mmirAppConfig, buildConfig);
 	if(!webpackConfig.plugins){
 		webpackConfig.plugins = plugins;
 	} else {
