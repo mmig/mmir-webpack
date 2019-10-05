@@ -133,36 +133,6 @@ declare namespace mmirWebpackFunc {
 		jquery?: boolean;
 
 		/**
-		 * Specify how (mmir) configuration and settings should be parsed/included,
-		 * and/or specify additional settings that should be included.
-		 *
-		 * The `mmir` configuration/settings are the resources that are by default
-		 * located in the mmir `config/` directory
-		 * (with exception of the `states` sub-directory; for those instead use [[WebpackAppConfig.states]]):
-		 *  ```bash
-		 *  config/
-		 *        /languages/
-		 *                  /<lang>/
-		 *                         /grammar.json
-		 *                         /dictionary.json
-		 *                         /speech.json
-		 *        /states/
-		 *               /input.xml
-		 *               /dialog.xml
-		 *        /configuration.json
-		 * ```
-		 */
-		settings?: SettingsOptions;
-		/**
-		 * Specify additional (mmir) runtime configuration values,
-		 * e.g. in addition to `config/configuration.json`.
-		 *
-		 * In case of conflicts, these settings will override settings in
-		 * `config/configuration.json`,
-		 */
-		configuration?: RuntimeConfiguration;
-
-		/**
 		 * Specify and configure mmir-plugins that should be included.
 		 */
 		includePlugins?: Array<PluginOptions>;

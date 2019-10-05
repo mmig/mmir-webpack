@@ -14,6 +14,7 @@ var resourcesConfig = require('./webpack-resources-config');
 
 var logUtils = require('mmir-tooling/utils/log-utils');
 var log = logUtils.log;
+var warn = logUtils.warn;
 
 var cliUtils = require('mmir-tooling/utils/cli-utils');
 
@@ -57,6 +58,14 @@ var enableJQuery = function(mmirAppConfig){
 var createModuleRules = function(mmirAppConfig, buildConfig){
 
 	var appRootDir = mmirAppConfig.rootPath;
+
+	//FIXME currently cannot include grammar.json as file because of json-grammar-loader TODO include same resouce multiple times with different formats(?) multi-loader?
+	buildConfig.settings.forEach(function(s){
+		if(!s.exclude && s.type === 'grammar'){
+			warn('WARN: cannot include JSON grammars as file, inlining grammar source for "'+s.id+'" instead ...');
+			s.include = 'inline';
+		}
+	});
 
 	var mmirAppConfigContent = appConfigUtils.generateModuleCode(mmirAppConfig);
 	var appConfigModulePath = fileUtils.normalizePath(path.join(webpackRootDir, 'runtime', 'webpackModuleInit.js'));
