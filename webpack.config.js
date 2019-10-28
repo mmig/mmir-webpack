@@ -23,13 +23,15 @@ var grammarOptions = {
 	path: './test-data/config/languages',
 	engine: 'pegjs',
 	// asyncCompile: false,
+	// async: true,
+	initPhrase: 'turn the oven on',
 	grammars: {
 		ja: {ignore: true},
 		de: {exclude: true},
 		en: {engine: 'jscc', async: true},
 
 		//specifying JSON grammar files directly
-		testing: {engine: 'jscc', file: path.resolve('./test-data/config/languages/de/grammar.json')},
+		testing: {engine: 'jscc', file: path.resolve('./test-data/config/languages/de/grammar.json'), force: true},
 		testing2: {id: '!id warning!', engine: 'jison', file: path.resolve('./test-data/config/languages/de/grammar.json_large-example')}
 		// testing_id_collision TODO : {engine: 'jison', file: path.resolve('./test-data/config/languages/de/grammar.json_large-example')}
 
@@ -112,7 +114,14 @@ const mmirAppConfig = {
 	views: viewOptions,
 	settings: settingOptions,
 	states: stateOptions,
-	configuration: {language: 'en'},
+	configuration: {
+		language: 'en',
+		// grammarAsyncExecMode: true,
+		grammarAsyncExecMode: [{id: 'testing2', phrase: "erstelle einen Termin am 16.07.2018 um 15:30 Uhr"}],
+		ignoreGrammarFiles: ['de', 'en', 'ignoreTest']
+	},
+
+	// includeModules: ['mmirf/asyncGrammar'],//FIXME should be automatically added if grammarAsyncExecMode and/or grammarOptions.asyncExec
 
 	controllers: ctrlOptions,
 	helpers: helperOptions,
