@@ -65,7 +65,7 @@ var createModuleRules = function(mmirAppConfig, buildConfig){
 			if(_.isArray(s.file) && s.include !== 'inline'){
 				warn('WARN settings-utils: encountered multiple file resources for "'+s.id+'" ('+s.type+'): cannot be included as (single) file, inlining  resources instead...');
 				s.include = 'inline';
-			} else if(s.type === 'grammar'){
+			} else if(s.type === 'grammar' && s.include !== 'inline'){
 				warn('WARN: cannot include JSON grammars as file, inlining grammar source for "'+s.id+'" instead ...');
 				s.include = 'inline';
 			} else if(s.type === 'speech' && s.value && s.include !== 'inline'){
