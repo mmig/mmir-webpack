@@ -61,9 +61,17 @@ var createModuleRules = function(mmirAppConfig, buildConfig){
 
 	//FIXME currently cannot include grammar.json as file because of json-grammar-loader TODO include same resouce multiple times with different formats(?) multi-loader?
 	buildConfig.settings.forEach(function(s){
-		if(!s.exclude && s.type === 'grammar'){
-			warn('WARN: cannot include JSON grammars as file, inlining grammar source for "'+s.id+'" instead ...');
-			s.include = 'inline';
+		if(!s.exclude){
+			if(_.isArray(s.file) && s.include !== 'inline'){
+				warn('WARN settings-utils: encountered multiple file resources for "'+s.id+'" ('+s.type+'): cannot be included as (single) file, inlining  resources instead...');
+				s.include = 'inline';
+			} else if(s.type === 'grammar'){
+				warn('WARN: cannot include JSON grammars as file, inlining grammar source for "'+s.id+'" instead ...');
+				s.include = 'inline';
+			} else if(s.type === 'speech' && s.value && s.include !== 'inline'){
+				warn('WARN cannot include speech-config with modified value as JSON file, inlining speech-config for "'+s.id+'" instead ..."');
+				s.include = 'inline';
+			}
 		}
 	});
 
