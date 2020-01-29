@@ -1,18 +1,22 @@
-[mmir-webpack][3]
+[mmir-webpack][0]
 ========
 
 [![MIT license](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/mmig/mmir-webpack)
+[![GitHub package.json version](https://img.shields.io/github/package-json/v/mmig/mmir-webpack/master)](https://github.com/mmig/mmir-webpack)
+[![npm](https://img.shields.io/npm/v/mmir-webpack)](https://www.npmjs.com/package/mmir-webpack)
+[![API](https://img.shields.io/badge/docs-API%20reference-orange.svg?style=flat)](https://mmig.github.io/mmir/api)
+[![Guides](https://img.shields.io/badge/docs-guides-orange.svg?style=flat)](https://github.com/mmig/mmir/wiki)
 
-Integration for [mmir][1] in [webpack][4] built apps.
+Integration for [mmir][1] in [webpack][3] built apps.
 
 Basic steps for integrating [mmir][1]:
 
  * install [mmir-lib][1] via `npm`
- * install [mmir-webpack][3] via `npm`
+ * install [mmir-webpack][0] via `npm`
  * create or use existing `webpack` configuration where `mmir-webpack`
-   configures/extends the apps base webpack-configuration for `mmir`, similar to
-   ```
+   configures/extends the app's base webpack-configuration for `mmir`, similar to
+   ```javascript
+   //const webpackInstance = require('webpack');
    require('mmir-webpack')(webpackInstance, origWebpackConfig, mmirWebpackConfig)
    ```
 
@@ -26,10 +30,20 @@ Basic steps for integrating [mmir][1]:
 
 Install `mmir-webpack` via `npm`.
 
+From `npm` registry
+```bash
+npm install mmir-webpack
+```
+
+Or latest development version from _github_
+```bash
+npm install git+https://github.com/mmig/mmir-webpack.git
+```
+
 
 # API Documentation
 
-See generated [API documentation][5] (or more detailed [HTML][6] documentation) and details below.
+See generated [API documentation][4] (or more detailed [HTML][5] documentation) and details below.
 
 
 # Example
@@ -61,12 +75,16 @@ module.exports = appWebpackConfig;
 
 See also file [webpack.config.js](./webpack.config.js) for more examples.
 
+# Versioning Note
+
+The major and minor version number of `mmir-webpack` matches the compatible
+verison of `mmir-lib`, i.e. `mmir-webpack X.Y.i` is compatible with `mmir-lib X.Y.j`.
 
 --
 
+[0]: https://github.com/mmig/mmir-webpack
 [1]: https://github.com/mmig/mmir-lib
 [2]: https://github.com/mmig/mmir-tooling
-[3]: https://github.com/mmig/mmir-webpack
-[4]: https://webpack.js.org/
-[5]: https://github.com/mmig/mmir-webpack/tree/master/docs/modules
-[6]: https://mmig.github.io/mmir/api-ts/modules/mmir_webpack.html
+[3]: https://webpack.js.org/
+[4]: https://github.com/mmig/mmir-webpack/tree/master/docs/modules
+[5]: https://mmig.github.io/mmir/api-ts/modules/mmir_webpack.html
