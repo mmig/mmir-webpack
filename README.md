@@ -52,8 +52,8 @@ The base webpack configuration is in `/app-webpack.config.js`:
 start/configure `webpack` build to use configuration `/webpack.config.js` --
 this webpack build configuration should load the app's webpack configuration
 and adds its `mmir` configuration, e.g. something similar to
-```javascript
 
+```javascript
 const path = require('path');
 const webpack = require('webpack');
 
@@ -73,6 +73,31 @@ module.exports = appWebpackConfig;
 
 ```
 
+or an example for replacing / extending / overwriting runtime configuration settings
+of `mmir` that would usually be made in the `<src-app-mmir>/config/configuration.json` file:
+```javascript
+...
+
+// specify some runtime configuration settings for mmir:
+const runtimeConfig = {
+  language: 'de',              // this will set or overwrite language setting in configuration.json (see docs for RuntimeConfiguration)
+  grammarAsyncExecMode: true   // load grammars for async-execution in web workers (see docs for RuntimeConfiguration)
+};
+
+...
+
+//set the runtime configuration in the mmir webpack options & apply them:
+const mmirWebpackConfig = {
+  ...
+  configuration: runtimeConfig
+};
+
+require('mmir-webpack')(webpack, appWebpackConfig, mmirWebpackConfig);
+
+module.exports = appWebpackConfig;
+
+```
+
 See also file [webpack.config.js](./webpack.config.js) for more examples.
 
 # Versioning Note
@@ -80,7 +105,7 @@ See also file [webpack.config.js](./webpack.config.js) for more examples.
 The major and minor version number of `mmir-webpack` matches the compatible
 verison of `mmir-lib`, i.e. `mmir-webpack X.Y.i` is compatible with `mmir-lib X.Y.j`.
 
---
+----
 
 [0]: https://github.com/mmig/mmir-webpack
 [1]: https://github.com/mmig/mmir-lib
