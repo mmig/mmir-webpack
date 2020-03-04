@@ -4,8 +4,8 @@
 [![MIT license](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![GitHub package.json version](https://img.shields.io/github/package-json/v/mmig/mmir-webpack/master)](https://github.com/mmig/mmir-webpack)
 [![npm](https://img.shields.io/npm/v/mmir-webpack)](https://www.npmjs.com/package/mmir-webpack)
-[![API](https://img.shields.io/badge/docs-API%20reference-orange.svg?style=flat)](https://github.com/mmig/mmir-webpack/tree/master/docs)
-[![MMIR API](https://img.shields.io/badge/docs-MMIR%20API%20reference-orange.svg?style=flat)](https://mmig.github.io/mmir/api)
+[![API MD](https://img.shields.io/badge/docs%40master-API%20quick%20reference-orange.svg?style=flat)](https://github.com/mmig/mmir-webpack/tree/master/docs)
+[![API](https://img.shields.io/badge/docs-API%20reference-orange.svg?style=flat)](https://mmig.github.io/mmir/api-ts)
 [![Guides](https://img.shields.io/badge/docs-guides-orange.svg?style=flat)](https://github.com/mmig/mmir/wiki)
 
 Integration for [mmir][1] in [webpack][3] built apps.
