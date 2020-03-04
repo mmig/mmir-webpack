@@ -26,19 +26,22 @@
     "lib": "./dist"
   },
   "devDependencies": {
-    "@types/fs-extra": "^8.0.1",
+    "@types/fs-extra": "^8.1.0",
     "@types/loader-utils": "^1.1.3",
-    "@types/webpack": "^4.41.3",
+    "@types/webpack": "^4.41.7",
     "cross-var": "^1.1.0",
     "eclint": "^2.8.1",
+    "file-loader": ">=4.3.0",
     "fs-extra": "^8.1.0",
-    "mmir-lib": "^6.0.0",
-    "typedoc": "^0.16.9",
+    "mmir-lib": "^6.1.0",
+    "raw-loader": ">=3.1.0",
+    "typedoc": "^0.16.11",
     "typedoc-plugin-external-module-name": "^3.0.0",
-    "typedoc-plugin-markdown": "^2.2.16",
-    "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.10.1"
+    "typedoc-plugin-markdown": "^2.2.17",
+    "val-loader": ">=1.1.1",
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
   },
   "scripts": {
     "build": "webpack",
@@ -49,12 +52,16 @@
     "gen-doc": "cross-var typedoc --name \"$npm_package_name $npm_package_version\" index.d.ts"
   },
   "dependencies": {
-    "file-loader": "^4.3.0",
     "lodash": "^4.17.11",
-    "mmir-tooling": "^6.0.0",
-    "raw-loader": "^3.1.0",
-    "val-loader": "^1.1.1",
+    "mmir-tooling": "^6.1.0",
     "virtual-module-webpack-plugin": "^0.4.1",
     "worker-loader": "^2.0.0"
+  },
+  "peerDependencies": {
+    "mmir-lib": "^6.1.0",
+    "webpack": ">=3.0.0",
+    "file-loader": ">=4.3.0",
+    "raw-loader": ">=3.1.0",
+    "val-loader": ">=1.1.1"
   }
 }
