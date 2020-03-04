@@ -1,6 +1,7 @@
 {
   "name": "mmir-webpack",
   "version": "6.1.0",
+  "description": "Integration for MMIR library in webpack builds",
   "keywords": [
     "mmir",
     "webpack"
