@@ -34,9 +34,11 @@
     "typedoc-plugin-external-module-name": "^3.0.0",
     "typedoc-plugin-markdown": "^2.2.17",
     "val-loader": ">=1.1.1",
+    "virtual-module-webpack-plugin": "^0.4.1",
     "webpack": "^4.42.0",
     "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.10.3"
+    "webpack-dev-server": "^3.10.3",
+    "worker-loader": "^2.0.0"
   },
   "scripts": {
     "build": "webpack",
@@ -48,15 +50,15 @@
   },
   "dependencies": {
     "lodash": "^4.17.11",
-    "mmir-tooling": "^6.1.0",
-    "virtual-module-webpack-plugin": "^0.4.1",
-    "worker-loader": "^2.0.0"
+    "mmir-tooling": "^6.1.0"
   },
   "peerDependencies": {
     "mmir-lib": "^6.1.0",
     "webpack": ">=3.0.0",
     "file-loader": ">=4.3.0",
     "raw-loader": ">=3.1.0",
-    "val-loader": ">=1.1.1"
+    "virtual-module-webpack-plugin": ">=0.4.1",
+    "val-loader": ">=1.1.1",
+    "worker-loader": ">=2.0.0"
   }
 }
