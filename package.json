@@ -3,12 +3,7 @@
   "version": "6.0.0",
   "keywords": [
     "mmir",
-    "multimodal",
-    "dialog",
-    "system",
-    "speech",
-    "asr",
-    "tts"
+    "webpack"
   ],
   "author": "russaa",
   "license": "MIT",
