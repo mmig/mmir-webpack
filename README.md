@@ -24,7 +24,14 @@ Basic steps for integrating [mmir][1]:
 
  * Node.js
  * `webpack` built application with `webpack` version 3.x - 4.x
-
+  * `webpack` plugins: _(may need to be installed, see instructions below)_
+    ```json
+    "file-loader": ">=4.3.0",
+    "raw-loader": ">=3.1.0",
+    "virtual-module-webpack-plugin": ">=0.4.1",
+    "val-loader": ">=1.1.1",
+    "worker-loader": ">=2.0.0"
+    ```
 
 ### Installation
 
@@ -40,6 +47,15 @@ Or latest development version from _github_
 npm install git+https://github.com/mmig/mmir-webpack.git
 ```
 
+In addition, some `webpack` plugins are required:  
+if not already installed _(see npm log output regarding peer/OPTIONAL dependencies
+during installation of `mmir-webpack`)_, they can be installed with
+```bash
+npm install file-loader raw-loader val-loader worker-loader virtual-module-webpack-plugin
+```
+_Or, for older `webpack` versions, see the corresponding documentation for the
+plugin for installing the appropriate plugin package version(s), using
+`npm install <package>@<required version>`_
 
 # API Documentation
 
