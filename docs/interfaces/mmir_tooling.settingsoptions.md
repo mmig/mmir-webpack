@@ -1,4 +1,4 @@
-[mmir-webpack 6.0.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [SettingsOptions](mmir_tooling.settingsoptions.md)
+[mmir-webpack 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [SettingsOptions](mmir_tooling.settingsoptions.md)
 
 # Interface: SettingsOptions
 

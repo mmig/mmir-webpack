@@ -1,4 +1,4 @@
-[mmir-webpack 6.0.0](../README.md) › [mmir-lib](../modules/mmir_lib.md) › [RequireJsDefine](mmir_lib.requirejsdefine.md)
+[mmir-webpack 6.1.0](../README.md) › [mmir-lib](../modules/mmir_lib.md) › [RequireJsDefine](mmir_lib.requirejsdefine.md)
 
 # Interface: RequireJsDefine
 

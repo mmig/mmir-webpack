@@ -1,6 +1,6 @@
-[mmir-webpack 6.0.0](README.md)
+[mmir-webpack 6.1.0](README.md)
 
-# mmir-webpack 6.0.0
+# mmir-webpack 6.1.0
 
 ## Index
 

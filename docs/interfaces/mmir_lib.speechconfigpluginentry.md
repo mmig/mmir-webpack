@@ -1,4 +1,4 @@
-[mmir-webpack 6.0.0](../README.md) › [mmir-lib](../modules/mmir_lib.md) › [SpeechConfigPluginEntry](mmir_lib.speechconfigpluginentry.md)
+[mmir-webpack 6.1.0](../README.md) › [mmir-lib](../modules/mmir_lib.md) › [SpeechConfigPluginEntry](mmir_lib.speechconfigpluginentry.md)
 
 # Interface: SpeechConfigPluginEntry
 

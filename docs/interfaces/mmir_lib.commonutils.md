@@ -1,4 +1,4 @@
-[mmir-webpack 6.0.0](../README.md) › [mmir-lib](../modules/mmir_lib.md) › [CommonUtils](mmir_lib.commonutils.md)
+[mmir-webpack 6.1.0](../README.md) › [mmir-lib](../modules/mmir_lib.md) › [CommonUtils](mmir_lib.commonutils.md)
 
 # Interface: CommonUtils
 

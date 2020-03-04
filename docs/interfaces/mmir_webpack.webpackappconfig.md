@@ -1,4 +1,4 @@
-[mmir-webpack 6.0.0](../README.md) › [mmir-webpack](../modules/mmir_webpack.md) › [WebpackAppConfig](mmir_webpack.webpackappconfig.md)
+[mmir-webpack 6.1.0](../README.md) › [mmir-webpack](../modules/mmir_webpack.md) › [WebpackAppConfig](mmir_webpack.webpackappconfig.md)
 
 # Interface: WebpackAppConfig
 

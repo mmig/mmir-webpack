@@ -1,4 +1,4 @@
-[mmir-webpack 6.0.0](../README.md) › [mmir-webpack](mmir_webpack.md)
+[mmir-webpack 6.1.0](../README.md) › [mmir-webpack](mmir_webpack.md)
 
 # Module: mmir-webpack
 

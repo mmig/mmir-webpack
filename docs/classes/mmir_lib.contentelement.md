@@ -1,4 +1,4 @@
-[mmir-webpack 6.0.0](../README.md) › [mmir-lib](../modules/mmir_lib.md) › [ContentElement](mmir_lib.contentelement.md)
+[mmir-webpack 6.1.0](../README.md) › [mmir-lib](../modules/mmir_lib.md) › [ContentElement](mmir_lib.contentelement.md)
 
 # Class: ContentElement
 

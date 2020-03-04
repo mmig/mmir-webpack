@@ -1,4 +1,4 @@
-[mmir-webpack 6.0.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [GrammarOptions](mmir_tooling.grammaroptions.md)
+[mmir-webpack 6.1.0](../README.md) › [mmir-tooling](../modules/mmir_tooling.md) › [GrammarOptions](mmir_tooling.grammaroptions.md)
 
 # Interface: GrammarOptions
 
