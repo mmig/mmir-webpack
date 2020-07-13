@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "lodash": "^4.17.11",
-    "mmir-tooling": "^6.1.0"
+    "mmir-tooling": "^6.1.1"
   },
   "peerDependencies": {
     "mmir-lib": "^6.1.0",
