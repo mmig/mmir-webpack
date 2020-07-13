@@ -102,6 +102,7 @@ var createModuleRules = function(mmirAppConfig, buildConfig){
 			use: {
 				loader: 'file-loader',
 				options: {
+					esModule: false,//FIXME must detect file-loader version: if >= 5.0.0 set this option (before that version the option's name was esModules and set to false by default!)
 					name: function(file) {
 
 						if(fileResourcesPathMap && fileResourcesPathMap[fileUtils.normalizePath(file)]){
