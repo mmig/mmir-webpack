@@ -43,7 +43,7 @@ From `npm` registry
 npm install mmir-webpack
 ```
 
-Or latest development version from _github_
+Or latest development version from `github`
 ```bash
 npm install git+https://github.com/mmig/mmir-webpack.git
 ```
@@ -54,7 +54,7 @@ during installation of `mmir-webpack`)_, they can be installed with
 ```bash
 npm install file-loader raw-loader val-loader worker-loader virtual-module-webpack-plugin
 ```
-_Or, for older `webpack` versions, see the corresponding documentation for the
+_For older `webpack` versions, see the corresponding documentation for the
 plugin for installing the appropriate plugin package version(s), using
 `npm install <package>@<required version>`_
 
