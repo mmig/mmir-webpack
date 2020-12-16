@@ -28,6 +28,40 @@ var webpackRootDir = __dirname;
 // log('mmir-lib path: ', rootDir);
 // log('mmir-webpack path: ', webpackRootDir);
 
+/**
+ *	expand require.js package definitions & add them to the alias dictionary
+ *
+ * TODO extract this function to mmir-tooling?
+ *
+ * @param  {string} rootDir the mmir root dir (usually node_modules/mmir-lib/lib/ )
+ * @param  {{[id: string]: string}} alias dictionary for module ID/alias -> module-path (INOUT parameter)
+ * @param  {Array<{name: string, location: string}>} resourcesConfigPackages list of require.js package definitions
+ */
+var expandPackageResources = function(rootDir, alias, resourcesConfigPackages){
+
+	var getFiles = function(dir, relDir, baseId) {
+		var files = fs.readdirSync(dir);
+		files.forEach(function(f){
+			var absPath = path.join(dir, f);
+			var relPath = relDir? path.join(relDir, f) : f;
+			if(fileUtils.isDirectory(absPath)){
+				getFiles(dir, relPath);
+			} else {
+				//create id for file/module (without file-extension):
+				var fid = fileUtils.normalizePath(path.join(baseId, path.basename(relPath, path.extname(relPath))));
+				alias[fid] = absPath;
+				// console.log('  added package module ', fid, ' -> ', absPath);
+			}
+		});
+	};
+
+	// list: Array<{name: string, location: string}>
+	resourcesConfigPackages.forEach(function(p){
+		getFiles(path.join(rootDir, p.location), '', p.name);
+	});
+
+}
+
 var createResolveAlias = function(mmirAppConfig){
 
 	var paths = resourcesConfig.paths;
@@ -40,6 +74,10 @@ var createResolveAlias = function(mmirAppConfig){
 		} else {
 			alias[n] = path.isAbsolute(p)? p : path.join(rootDir, p);
 		}
+	}
+
+	if(Array.isArray(resourcesConfig.packages)){
+		expandPackageResources(rootDir, alias, resourcesConfig.packages);
 	}
 
 	appConfigUtils.addAliasFrom(mmirAppConfig, alias);
