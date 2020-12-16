@@ -5,7 +5,8 @@ const _ = require('lodash');
 
 var fileUtils = require('mmir-tooling/utils/filepath-utils');
 var packageUtils = require('./utils/package-utils');
-var createBuildConfig = require('mmir-tooling/tools/create-build-config');
+var createBuildConfig = require('mmir-tooling/tools/create-build-config').createBuildConfig;
+createBuildConfig = createBuildConfig.createBuildConfig || createBuildConfig;//<- support old JS mmir-tooling as well as generated TS->JS mmir-tooling (TS does not support function-only exports)
 var grammarUtils = require('mmir-tooling/grammar/grammar-utils');
 
 var appConfigUtils = require('./utils/webpack-module-init-gen.js');
