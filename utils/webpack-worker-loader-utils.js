@@ -1,5 +1,6 @@
 var path = require('path');
 var fileUtils = require('mmir-tooling/utils/filepath-utils');
+var packageUtils = require('./package-utils');
 
 var resources = require('../webpack-resources-config.js');
 
@@ -14,11 +15,14 @@ var createWebWorkerLoaderConfig = function(rootDir){
 
 	var testWebWorkerFunc = fileUtils.createFileTestFunc(webworkerPaths, ' for [web worker]');
 
+	//create compatiblity options: for worker-loader < 3.x use option-name "name", otherwise "filename";
+	var options = packageUtils.setOptionIf({}, 'filename', 'name', 'worker-[name].[hash].js', false, 'worker-loader', '>= 3.0.0');
+
 	return {
 		test: testWebWorkerFunc,
 		use: {
 			loader: 'worker-loader',
-			options: { name: 'worker-[name].[hash].js' }
+			options: options
 		}
 	};
 }

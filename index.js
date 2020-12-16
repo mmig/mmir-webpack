@@ -1,8 +1,10 @@
 
 const path = require('path');
+const fs = require('fs');
 const _ = require('lodash');
 
 var fileUtils = require('mmir-tooling/utils/filepath-utils');
+var packageUtils = require('./utils/package-utils');
 var createBuildConfig = require('mmir-tooling/tools/create-build-config');
 var grammarUtils = require('mmir-tooling/grammar/grammar-utils');
 
@@ -101,8 +103,7 @@ var createModuleRules = function(mmirAppConfig, buildConfig){
 			test: fileUtils.createFileTestFunc(binFilePaths, ' for [raw file]'),
 			use: {
 				loader: 'file-loader',
-				options: {
-					esModule: false,//FIXME must detect file-loader version: if >= 5.0.0 set this option (before that version the option's name was esModules and set to false by default!)
+				options: packageUtils.setOptionIf({
 					name: function(file) {
 
 						if(fileResourcesPathMap && fileResourcesPathMap[fileUtils.normalizePath(file)]){
@@ -126,7 +127,9 @@ var createModuleRules = function(mmirAppConfig, buildConfig){
 						//do normalize path-separators to '/' for proper usage in JS code -> "var url = require(<file resource>)"
 						return fileUtils.normalizePath(file);
 					}
-				}
+				},
+				//set compatiblity option: if file-loader >= 5.0.0 set 'esModule' to false, otherwise set 'esModules' to false
+				'esModule', 'esModules', false, false, 'file-loader', '>= 5.0.0')
 			}
 		},
 
