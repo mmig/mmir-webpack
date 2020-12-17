@@ -27,8 +27,8 @@ Basic steps for integrating [mmir][1]:
  * `webpack` built application with `webpack` version 3.x - 4.x
   * `webpack` plugins: _(may need to be installed, see instructions below)_
     ```json
-    "file-loader": ">=4.3.0",
-    "raw-loader": ">=3.1.0",
+    "file-loader": ">=3.0.0",
+    "raw-loader": ">=3.0.0",
     "virtual-module-webpack-plugin": ">=0.4.1",
     "val-loader": ">=1.1.1",
     "worker-loader": ">=2.0.0"

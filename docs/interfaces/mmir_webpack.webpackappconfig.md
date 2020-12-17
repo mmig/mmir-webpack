@@ -1,4 +1,6 @@
-[mmir-webpack 6.1.0](../README.md) › [mmir-webpack](../modules/mmir_webpack.md) › [WebpackAppConfig](mmir_webpack.webpackappconfig.md)
+**[mmir-webpack 6.2.0](../README.md)**
+
+> [Globals](../README.md) / [mmir-webpack](../modules/mmir_webpack.md) / WebpackAppConfig
 
 # Interface: WebpackAppConfig
 
@@ -38,42 +40,42 @@ var appConfig = {
 
 ### Properties
 
-* [config](mmir_webpack.webpackappconfig.md#optional-config)
-* [configuration](mmir_webpack.webpackappconfig.md#optional-configuration)
-* [controllers](mmir_webpack.webpackappconfig.md#optional-controllers)
-* [disableLogging](mmir_webpack.webpackappconfig.md#optional-disablelogging)
-* [grammars](mmir_webpack.webpackappconfig.md#optional-grammars)
-* [helpers](mmir_webpack.webpackappconfig.md#optional-helpers)
-* [includeModules](mmir_webpack.webpackappconfig.md#optional-includemodules)
-* [includePlugins](mmir_webpack.webpackappconfig.md#optional-includeplugins)
-* [jquery](mmir_webpack.webpackappconfig.md#optional-jquery)
-* [loadAfterInit](mmir_webpack.webpackappconfig.md#optional-loadafterinit)
-* [loadBeforeInit](mmir_webpack.webpackappconfig.md#optional-loadbeforeinit)
-* [models](mmir_webpack.webpackappconfig.md#optional-models)
-* [paths](mmir_webpack.webpackappconfig.md#optional-paths)
-* [resourcesPath](mmir_webpack.webpackappconfig.md#optional-resourcespath)
-* [resourcesPathOptions](mmir_webpack.webpackappconfig.md#optional-resourcespathoptions)
-* [rootPath](mmir_webpack.webpackappconfig.md#optional-rootpath)
-* [settings](mmir_webpack.webpackappconfig.md#optional-settings)
-* [states](mmir_webpack.webpackappconfig.md#optional-states)
-* [views](mmir_webpack.webpackappconfig.md#optional-views)
-* [webpackPlugins](mmir_webpack.webpackappconfig.md#optional-webpackplugins)
+* [config](mmir_webpack.webpackappconfig.md#config)
+* [configuration](mmir_webpack.webpackappconfig.md#configuration)
+* [controllers](mmir_webpack.webpackappconfig.md#controllers)
+* [disableLogging](mmir_webpack.webpackappconfig.md#disablelogging)
+* [grammars](mmir_webpack.webpackappconfig.md#grammars)
+* [helpers](mmir_webpack.webpackappconfig.md#helpers)
+* [includeModules](mmir_webpack.webpackappconfig.md#includemodules)
+* [includePlugins](mmir_webpack.webpackappconfig.md#includeplugins)
+* [jquery](mmir_webpack.webpackappconfig.md#jquery)
+* [loadAfterInit](mmir_webpack.webpackappconfig.md#loadafterinit)
+* [loadBeforeInit](mmir_webpack.webpackappconfig.md#loadbeforeinit)
+* [models](mmir_webpack.webpackappconfig.md#models)
+* [paths](mmir_webpack.webpackappconfig.md#paths)
+* [resourcesPath](mmir_webpack.webpackappconfig.md#resourcespath)
+* [resourcesPathOptions](mmir_webpack.webpackappconfig.md#resourcespathoptions)
+* [rootPath](mmir_webpack.webpackappconfig.md#rootpath)
+* [settings](mmir_webpack.webpackappconfig.md#settings)
+* [states](mmir_webpack.webpackappconfig.md#states)
+* [views](mmir_webpack.webpackappconfig.md#views)
+* [webpackPlugins](mmir_webpack.webpackappconfig.md#webpackplugins)
 
 ## Properties
 
-### `Optional` config
+### config
 
-• **config**? : *[ModuleConfigOptions](../modules/mmir_tooling.md#moduleconfigoptions)*
+• `Optional` **config**: [ModuleConfigOptions](../modules/mmir_tooling.md#moduleconfigoptions)
 
 Configuration for mmir modules (analogous to requirejs' module config entries)
 
 ___
 
-### `Optional` configuration
+### configuration
 
-• **configuration**? : *[RuntimeConfiguration](mmir_tooling.runtimeconfiguration.md)*
+• `Optional` **configuration**: [RuntimeConfiguration](mmir_tooling.runtimeconfiguration.md)
 
-*Inherited from [AppConfig](mmir_tooling.appconfig.md).[configuration](mmir_tooling.appconfig.md#optional-configuration)*
+*Inherited from [WebpackAppConfig](mmir_webpack.webpackappconfig.md).[configuration](mmir_webpack.webpackappconfig.md#configuration)*
 
 Specify additional (mmir) runtime configuration values,
 e.g. in addition to `config/configuration.json`.
@@ -83,9 +85,9 @@ In case of conflicts, these settings will override settings in
 
 ___
 
-### `Optional` controllers
+### controllers
 
-• **controllers**? : *[ControllerOptions](mmir_tooling.controlleroptions.md) | boolean*
+• `Optional` **controllers**: [ControllerOptions](mmir_tooling.controlleroptions.md) \| boolean
 
 Specify how (mmir) controller implementations should be parsed/included,
 and/or specify additional controllers that should be included.
@@ -94,20 +96,20 @@ If `false`, (mmir) controllers will be excluded/ignored.
 
 ___
 
-### `Optional` disableLogging
+### disableLogging
 
-• **disableLogging**? : *boolean*
+• `Optional` **disableLogging**: boolean
 
 disable logging in mmir runtime:
 suppresses all logging-output by replacing mmirf/logger with an empty logger implementation
 
 ___
 
-### `Optional` grammars
+### grammars
 
-• **grammars**? : *[GrammarOptions](mmir_tooling.grammaroptions.md) | boolean*
+• `Optional` **grammars**: [GrammarOptions](mmir_tooling.grammaroptions.md) \| boolean
 
-*Inherited from [AppConfig](mmir_tooling.appconfig.md).[grammars](mmir_tooling.appconfig.md#optional-grammars)*
+*Inherited from [WebpackAppConfig](mmir_webpack.webpackappconfig.md).[grammars](mmir_webpack.webpackappconfig.md#grammars)*
 
 Specify how (JSON) grammars should be parsed/included, and/or
 specify additional grammars that should be included.
@@ -118,9 +120,9 @@ If `false`, grammars will be excluded/ignored.
 
 ___
 
-### `Optional` helpers
+### helpers
 
-• **helpers**? : *[HelperOptions](mmir_tooling.helperoptions.md) | boolean*
+• `Optional` **helpers**: [HelperOptions](mmir_tooling.helperoptions.md) \| boolean
 
 Specify how (mmir) helper implementations (for mmir controllers)
 should be parsed/included, and/or specify additional helpers that
@@ -130,9 +132,9 @@ If `false`, helpers will be excluded/ignored.
 
 ___
 
-### `Optional` includeModules
+### includeModules
 
-• **includeModules**? : *Array‹[ModuleId](../modules/mmir_tooling.md#moduleid)›*
+• `Optional` **includeModules**: Array<[ModuleId](../modules/mmir_tooling.md#moduleid)\>
 
 include a (optional) module, e.g. will be available via
 <code>mmir.require()</code>.
@@ -146,17 +148,17 @@ includeModules: ['jsccGen', 'mmirf/jisonGen'],
 
 ___
 
-### `Optional` includePlugins
+### includePlugins
 
-• **includePlugins**? : *Array‹[PluginOptions](mmir_tooling.pluginoptions.md)›*
+• `Optional` **includePlugins**: Array<[PluginOptions](mmir_tooling.pluginoptions.md)\>
 
 Specify and configure mmir-plugins that should be included.
 
 ___
 
-### `Optional` jquery
+### jquery
 
-• **jquery**? : *boolean*
+• `Optional` **jquery**: boolean
 
 If `jquery` is included:
 `mmir` will automatically use `jquery` utililities instead of alternative
@@ -167,9 +169,9 @@ NOTE: the `jquery` library must be loaded/included separately; this will
 
 ___
 
-### `Optional` loadAfterInit
+### loadAfterInit
 
-• **loadAfterInit**? : *Array‹[ModuleId](../modules/mmir_tooling.md#moduleid)›*
+• `Optional` **loadAfterInit**: Array<[ModuleId](../modules/mmir_tooling.md#moduleid)\>
 
 include module AND do load it AFTER initializing the mmir library;
 the module will also be available via <code>mmir.require()</code>.
@@ -183,9 +185,9 @@ loadAfterInit: ['mmirf/grammar/testing'],
 
 ___
 
-### `Optional` loadBeforeInit
+### loadBeforeInit
 
-• **loadBeforeInit**? : *Array‹[ModuleId](../modules/mmir_tooling.md#moduleid)›*
+• `Optional` **loadBeforeInit**: Array<[ModuleId](../modules/mmir_tooling.md#moduleid)\>
 
 include module AND do load it BEFORE initializing the mmir library;
 the module will also be available via <code>mmir.require()</code>.
@@ -197,9 +199,9 @@ loadBeforeInit: ['mmirf/polyfill'],
 
 ___
 
-### `Optional` models
+### models
 
-• **models**? : *[ModelOptions](mmir_tooling.modeloptions.md) | boolean*
+• `Optional` **models**: [ModelOptions](mmir_tooling.modeloptions.md) \| boolean
 
 Specify how (mmir) data model implementations should be parsed/included,
 and/or specify additional data models that should be included.
@@ -208,19 +210,19 @@ If `false`, data models will be excluded/ignored.
 
 ___
 
-### `Optional` paths
+### paths
 
-• **paths**? : *[ModulePaths](../modules/mmir_tooling.md#modulepaths)*
+• `Optional` **paths**: [ModulePaths](../modules/mmir_tooling.md#modulepaths)
 
 specifying additional (or replacing) module paths
 
 ___
 
-### `Optional` resourcesPath
+### resourcesPath
 
-• **resourcesPath**? : *string*
+• `Optional` **resourcesPath**: string
 
-*Inherited from [AppConfig](mmir_tooling.appconfig.md).[resourcesPath](mmir_tooling.appconfig.md#optional-resourcespath)*
+*Inherited from [WebpackAppConfig](mmir_webpack.webpackappconfig.md).[resourcesPath](mmir_webpack.webpackappconfig.md#resourcespath)*
 
 specify the path to the MMIR resources directory with the default structure:
  ```bash
@@ -247,36 +249,36 @@ options for including them.
 
 ___
 
-### `Optional` resourcesPathOptions
+### resourcesPathOptions
 
-• **resourcesPathOptions**? : *[ResourcesOptions](mmir_tooling.resourcesoptions.md)*
+• `Optional` **resourcesPathOptions**: [ResourcesOptions](mmir_tooling.resourcesoptions.md)
 
-*Inherited from [AppConfig](mmir_tooling.appconfig.md).[resourcesPathOptions](mmir_tooling.appconfig.md#optional-resourcespathoptions)*
+*Inherited from [WebpackAppConfig](mmir_webpack.webpackappconfig.md).[resourcesPathOptions](mmir_webpack.webpackappconfig.md#resourcespathoptions)*
 
 ___
 
-### `Optional` rootPath
+### rootPath
 
-• **rootPath**? : *string*
+• `Optional` **rootPath**: string
 
-*Inherited from [AppConfig](mmir_tooling.appconfig.md).[rootPath](mmir_tooling.appconfig.md#optional-rootpath)*
+*Inherited from [WebpackAppConfig](mmir_webpack.webpackappconfig.md).[rootPath](mmir_webpack.webpackappconfig.md#rootpath)*
 
 used for resolving non-absolute paths: the absolute path to the app's root/sources directory (if omitted the current working directory is used for resolving non-absolute paths)
 
 ___
 
-### `Optional` settings
+### settings
 
-• **settings**? : *[SettingsOptions](mmir_tooling.settingsoptions.md) | boolean*
+• `Optional` **settings**: [SettingsOptions](mmir_tooling.settingsoptions.md) \| boolean
 
-*Inherited from [AppConfig](mmir_tooling.appconfig.md).[settings](mmir_tooling.appconfig.md#optional-settings)*
+*Inherited from [WebpackAppConfig](mmir_webpack.webpackappconfig.md).[settings](mmir_webpack.webpackappconfig.md#settings)*
 
 Specify how (mmir) configuration and settings should be parsed/included,
 and/or specify additional settings that should be included.
 
 The `mmir` configuration/settings are the resources that are by default
 located in the mmir `config/` directory
-(with exception of the `states` sub-directory; for those instead use [WebpackAppConfig.states](mmir_webpack.webpackappconfig.md#optional-states)):
+(with exception of the `states` sub-directory; for those instead use [WebpackAppConfig.states](mmir_webpack.webpackappconfig.md#states)):
  ```bash
  config/
        /languages/
@@ -289,15 +291,15 @@ located in the mmir `config/` directory
               /dialog.xml
        /configuration.json
 ```
-(NOTE the `config/states/` sub-directory is handled/configured via the the [states](mmir_webpack.webpackappconfig.md#optional-states) option)
+(NOTE the `config/states/` sub-directory is handled/configured via the the [states](mmir_webpack.webpackappconfig.md#states) option)
 
 ___
 
-### `Optional` states
+### states
 
-• **states**? : *[StateOptions](mmir_tooling.stateoptions.md) | boolean*
+• `Optional` **states**: [StateOptions](mmir_tooling.stateoptions.md) \| boolean
 
-*Inherited from [AppConfig](mmir_tooling.appconfig.md).[states](mmir_tooling.appconfig.md#optional-states)*
+*Inherited from [WebpackAppConfig](mmir_webpack.webpackappconfig.md).[states](mmir_webpack.webpackappconfig.md#states)*
 
 Specify how (SCXML) state-machines/-models should be parsed/included, and/or
 specify additional state-models that should be included.
@@ -310,11 +312,11 @@ see [mmir-tooling/defaultValues](https://github.com/mmig/mmir-tooling/tree/maste
 
 ___
 
-### `Optional` views
+### views
 
-• **views**? : *[ViewOptions](mmir_tooling.viewoptions.md) | boolean*
+• `Optional` **views**: [ViewOptions](mmir_tooling.viewoptions.md) \| boolean
 
-*Inherited from [AppConfig](mmir_tooling.appconfig.md).[views](mmir_tooling.appconfig.md#optional-views)*
+*Inherited from [WebpackAppConfig](mmir_webpack.webpackappconfig.md).[views](mmir_webpack.webpackappconfig.md#views)*
 
 Specify how (mmir) views should be parsed/included, and/or
 specify additional views that should be included.
@@ -323,8 +325,8 @@ If `false`, views will be excluded/ignored.
 
 ___
 
-### `Optional` webpackPlugins
+### webpackPlugins
 
-• **webpackPlugins**? : *any[]*
+• `Optional` **webpackPlugins**: any[]
 
 configuration for webpack plugins (for internal use)

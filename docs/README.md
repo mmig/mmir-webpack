@@ -1,15 +1,17 @@
-[mmir-webpack 6.1.0](README.md)
+**[mmir-webpack 6.2.0](README.md)**
 
-# mmir-webpack 6.1.0
+> Globals
+
+# mmir-webpack 6.2.0
 
 ## Index
 
-### External modules
+### Modules
 
 * [mmir-lib](modules/mmir_lib.md)
 * [mmir-tooling](modules/mmir_tooling.md)
 * [mmir-webpack](modules/mmir_webpack.md)
 
-### Modules
+### Namespaces
 
 * [mmir-webpack](modules/mmir_webpack.md)
