@@ -19,6 +19,8 @@ function createWebWorkerLoaderConfig(rootDir: string): {test: (path: string) => 
 
     //create compatiblity options: for worker-loader < 3.x use option-name "name", otherwise "filename";
     const options = packageUtils.setOptionIf({}, 'filename', 'name', 'worker-[name].[hash].js', false, 'worker-loader', '>= 3.0.0');
+	//create compatiblity options for worker-loader < 3.x: must set esModule to false (and for lower worker-versions, must not set the option)
+	packageUtils.setOptionIf(options, 'esModule', null, false, false, 'worker-loader', '>= 3.0.0');
 
     return {
         test: testWebWorkerFunc,
