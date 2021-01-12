@@ -4,18 +4,14 @@
  * @module mmir-webpack
  */
 /** <dummy comment: required for typedoc to correctly interpret above @module annotation> */
-
-import { AppConfig , ModulePaths, ModuleId, ModuleConfigOptions, SettingsOptions, RuntimeConfiguration, PluginOptions, ControllerOptions, HelperOptions, ModelOptions } from 'mmir-tooling';
-
+import { AppConfig, ModulePaths, ModuleId, ModuleConfigOptions, SettingsOptions, RuntimeConfiguration, PluginOptions, ControllerOptions, HelperOptions, ModelOptions } from 'mmir-tooling';
 import { Configuration as WebpackConfiguration } from 'webpack';
 import * as webpack from 'webpack';
-
 /**
  *
  * @module mmir-webpack
  */
 export = mmirWebpackFunc;
-
 /**
  * apply the `mmirWebpackConfig` configuration the (existing) _webpack_
  * configuration `webpackConfig`.
@@ -33,7 +29,6 @@ export = mmirWebpackFunc;
  * @module mmir-webpack
  */
 declare function mmirWebpackFunc(webpackInstance: typeof webpack, webpackConfig: WebpackConfiguration, mmirWebpackConfig: mmirWebpackFunc.WebpackAppConfig): WebpackConfiguration;
-
 /**
  * `mmir-webpack` integrates `mmir-lib` into _webpack_-built apps:
  *
@@ -43,7 +38,6 @@ declare function mmirWebpackFunc(webpackInstance: typeof webpack, webpackConfig:
  * @module mmir-webpack
  */
 declare namespace mmirWebpackFunc {
-
     /**
      * @example
      * ```
@@ -72,16 +66,13 @@ declare namespace mmirWebpackFunc {
      * ```
      */
     export interface WebpackAppConfig extends AppConfig {
-
         /** specifying additional (or replacing) module paths */
         paths?: ModulePaths;
-
         /**
          * disable logging in mmir runtime:
          * suppresses all logging-output by replacing mmirf/logger with an empty logger implementation
          */
         disableLogging?: boolean;
-
         /**
          * include a (optional) module, e.g. will be available via
          * <code>mmir.require()</code>.
@@ -116,12 +107,10 @@ declare namespace mmirWebpackFunc {
          * ```
          */
         loadAfterInit?: Array<ModuleId>;
-
         /**
          * Configuration for mmir modules (analogous to requirejs' module config entries)
          */
         config?: ModuleConfigOptions;
-
         /**
          * If `jquery` is included:
          * `mmir` will automatically use `jquery` utililities instead of alternative
@@ -131,12 +120,10 @@ declare namespace mmirWebpackFunc {
          *       only configure `mmir` to use `jquery`, but not include the library itself.
          */
         jquery?: boolean;
-
         /**
          * Specify and configure mmir-plugins that should be included.
          */
         includePlugins?: Array<PluginOptions>;
-
         /**
          * Specify how (mmir) controller implementations should be parsed/included,
          * and/or specify additional controllers that should be included.
@@ -159,10 +146,8 @@ declare namespace mmirWebpackFunc {
          * If `false`, data models will be excluded/ignored.
          */
         models?: ModelOptions | boolean;
-
         /** configuration for webpack plugins (for internal use) */
         webpackPlugins?: any[];
-
         /**
          * (for internal use: will be filled/set by compiler)
          *
@@ -174,10 +159,10 @@ declare namespace mmirWebpackFunc {
          *  * `"mmirf/settings/grammar/{lang}"`: the JSON definition for the grammar of language code `lang` (~ `lang/grammar.json`)
          *
          */
-        runtimeSettings?: {[settingsId: string]: any};
+        runtimeSettings?: {
+            [settingsId: string]: any;
+        };
     }
-
     export type WebpackModuleConfiguration = WebpackConfiguration;
     export type WebpackModule = typeof webpack;
-
 }
