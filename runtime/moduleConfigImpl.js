@@ -21,17 +21,17 @@
 var _conf = {};
 
 module.exports = {
-	config: function(mod){
-		if(mod) {
-			var id = mod.i || mod.id;
-			if(_conf.config && _conf.config[id]){
-				return _conf.config[id];
-			}
-			return {};
-		}
-		return _conf;
-	},
-	setConfig: function(c){
-		_conf = c;
-	}
+    config: function(mod){
+        if(mod) {
+            var id = mod.i || mod.id;
+            if(_conf.config && _conf.config[id]){
+                return _conf.config[id];
+            }
+            return {};
+        }
+        return _conf;
+    },
+    setConfig: function(c){
+        _conf = c;
+    }
 }

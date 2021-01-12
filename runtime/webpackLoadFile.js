@@ -15,17 +15,17 @@ var settings = require('build-tool/webpack-app-config').settings;
 var logger = require('mmirf/logger').create('mmirf/util/loadInlineResource');
 
 function isInlined(url){
-	return !!settings[url];
+    return !!settings[url];
 }
 
 function invoke(isAsync, func, args){
-	if(isAsync){
-		setTimeout(function(){
-			func.apply(null, args);
-		}, 0);
-	} else {
-		func.apply(null, args);
-	}
+    if(isAsync){
+        setTimeout(function(){
+            func.apply(null, args);
+        }, 0);
+    } else {
+        func.apply(null, args);
+    }
 }
 
 /**
@@ -45,20 +45,20 @@ function invoke(isAsync, func, args){
  */
 module.exports = function(options){
 
-	if(isInlined(options.url)){
+    if(isInlined(options.url)){
 
-		logger.debug('loading inline resource '+options.url);
+        logger.debug('loading inline resource '+options.url);
 
-		try {
-			var result = settings[options.url];//require(options.url);
-			options.success && invoke(options.async !== false, options.success, [result]);
-		} catch(err){
-			options.error && invoke(options.async !== false, options.error, [err, 'error', err+'']);
-		}
+        try {
+            var result = settings[options.url];//require(options.url);
+            options.success && invoke(options.async !== false, options.success, [result]);
+        } catch(err){
+            options.error && invoke(options.async !== false, options.error, [err, 'error', err+'']);
+        }
 
-	} else {
+    } else {
 
-		return orig_loadFile(options);
-	}
+        return orig_loadFile(options);
+    }
 
 }
