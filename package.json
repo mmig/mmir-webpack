@@ -18,19 +18,26 @@
   },
   "main": "index.js",
   "types": "index.d.ts",
+  "typesVersions": {
+    "<3.8": {
+      "*": [
+        "typings3.6/*"
+      ]
+    }
+  },
   "directories": {
     "lib": "./dist"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.5",
-    "@types/loader-utils": "^2.0.1",
-    "@types/webpack": "^4.41.25",
+    "@types/lodash": "^4.14.167",
     "cross-var": "^1.1.0",
     "eclint": "^2.8.1",
     "file-loader": "^6.2.0",
     "fs-extra": "^9.0.1",
     "jquery": "^3.5.1",
     "mmir-lib": "^6.2.0",
+    "mmir-plugin-exports": "^2.1.1",
     "raw-loader": "^4.0.2",
     "typedoc": "^0.19.2",
     "typedoc-plugin-external-module-name": "^4.0.3",
@@ -44,12 +51,17 @@
     "worker-loader": "^3.0.6"
   },
   "scripts": {
-    "build": "webpack",
-    "watch": "webpack --watch",
-    "start": "webpack-dev-server",
+    "build": "npm run build:clean && tsc && npm run build:copy && npm run build:assets && npm run build:compat",
+    "build:clean": "node -e require('fs-extra').emptyDirSync('build')",
+    "build:copy": "node -e require('fs-extra').copy('build','./')",
+    "build:assets": "node -e require('fs-extra').copy('assets','./'),require('fs-extra').copy('assets','./build')",
+    "build:compat": "node -e require('fs-extra').emptyDirSync('typings3.6') && dtsdownlevel build --dir ../typings3.6",
     "doc": "npm run clean-doc && npm run gen-doc",
-    "clean-doc": "node -e require('fs-extra').emptyDirSync('docs')",
-    "gen-doc": "cross-var typedoc --name \"$npm_package_name $npm_package_version\" index.d.ts"
+    "doc:clean": "node -e require('fs-extra').emptyDirSync('docs')",
+    "doc:gen": "cross-var typedoc --name \"$npm_package_name $npm_package_version\" index.d.ts",
+    "test:build": "webpack",
+    "test:watch": "webpack --watch",
+    "test:start": "webpack-dev-server"
   },
   "dependencies": {
     "lodash": "^4.17.20",
