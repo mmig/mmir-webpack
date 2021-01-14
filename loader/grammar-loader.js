@@ -2,11 +2,10 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 const filepath_utils_1 = __importDefault(require("mmir-tooling/utils/filepath-utils"));
 const grammar_gen_1 = __importDefault(require("mmir-tooling/grammar/grammar-gen"));
 const loaderUtils = require('loader-utils');
-module.exports = function (content, map, meta) {
+const grammarLoader = function (content, map, meta) {
     var callback = this.async();
     var options = loaderUtils.getOptions(this) || {};
     // log('mmir-grammer-loader: options -> ', options);//DEBUG
@@ -20,7 +19,7 @@ module.exports = function (content, map, meta) {
 };
 //HACK force prevention of json-loader
 var jsonLoaderPath;
-module.exports.pitch = function (_remainingRequest, _precedingRequest, _data) {
+grammarLoader.pitch = function (_remainingRequest, _precedingRequest, _data) {
     // log('mmir-grammer-loader: PITCHing | remaining: ', _remainingRequest, ' | preceding: ', _precedingRequest, ' | data: ', _data);//DEBUG
     // log('mmir-grammer-loader: PITCHing options -> ',loaderUtils.getOptions(this));//DEBUG
     var options = loaderUtils.getOptions(this);
@@ -52,3 +51,4 @@ module.exports.pitch = function (_remainingRequest, _precedingRequest, _data) {
         }
     }
 };
+module.exports = grammarLoader;
