@@ -57,7 +57,7 @@
     "build:copy": "node -e \"require('fs-extra').copy('build','./')\"",
     "build:assets": "node -e \"require('fs-extra').copy('assets','./'),require('fs-extra').copy('assets','./build')\"",
     "build:compat": "node -e \"require('fs-extra').emptyDirSync('typings3.6')\" && dtsdownlevel build --dir ../typings3.6",
-    "doc": "npm run clean-doc && npm run gen-doc",
+    "doc": "npm run doc:clean && npm run doc:gen",
     "doc:clean": "node -e \"require('fs-extra').emptyDirSync('docs')\"",
     "doc:gen": "cross-var typedoc --name \"$npm_package_name $npm_package_version\" index.d.ts",
     "test:build": "webpack",
