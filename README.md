@@ -21,7 +21,7 @@ Basic steps for integrating [mmir][1]:
    require('mmir-webpack')(webpackInstance, origWebpackConfig, mmirWebpackConfig)
    ```
 
-__Overview__
+__Overview:__
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
