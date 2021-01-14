@@ -4,7 +4,7 @@ import grammarGen from 'mmir-tooling/grammar/grammar-gen';
 
 const loaderUtils = require('loader-utils');
 
-module.exports = function(content, map, meta) {
+const grammarLoader = function(content, map, meta) {
     var callback = this.async();
 
     var options = loaderUtils.getOptions(this) || {};
@@ -22,7 +22,7 @@ module.exports = function(content, map, meta) {
 
 //HACK force prevention of json-loader
 var jsonLoaderPath: string;
-module.exports.pitch = function(_remainingRequest, _precedingRequest, _data) {
+grammarLoader.pitch = function(_remainingRequest, _precedingRequest, _data) {
 
     // log('mmir-grammer-loader: PITCHing | remaining: ', _remainingRequest, ' | preceding: ', _precedingRequest, ' | data: ', _data);//DEBUG
     // log('mmir-grammer-loader: PITCHing options -> ',loaderUtils.getOptions(this));//DEBUG
@@ -58,3 +58,5 @@ module.exports.pitch = function(_remainingRequest, _precedingRequest, _data) {
         }
     }
 };
+
+export = grammarLoader;

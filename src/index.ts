@@ -667,4 +667,4 @@ function apply(webpackInstance: WebpackModule, webpackConfig: WebpackModuleConfi
     return webpackConfig;
 };
 
-module.exports = apply;
+export = apply;
