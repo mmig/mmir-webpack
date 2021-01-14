@@ -7,6 +7,6 @@
   "mode": "modules",
   "theme": "markdown",
   "out": "docs",
-  "hideSources": true,
+  "disableSources": true,
   "moduleResolution": "node"
 }
