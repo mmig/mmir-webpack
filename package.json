@@ -1,6 +1,6 @@
 {
   "name": "mmir-webpack",
-  "version": "6.2.0",
+  "version": "6.2.1",
   "description": "Integration for MMIR library in webpack builds",
   "keywords": [
     "mmir",
@@ -29,7 +29,7 @@
     "lib": "./dist"
   },
   "devDependencies": {
-    "@types/fs-extra": "^9.0.5",
+    "@types/fs-extra": "^9.0.6",
     "@types/lodash": "^4.14.167",
     "cross-var": "^1.1.0",
     "eclint": "^2.8.1",
@@ -39,16 +39,16 @@
     "mmir-lib": "^6.2.0",
     "mmir-plugin-exports": "^2.1.1",
     "raw-loader": "^4.0.2",
-    "typedoc": "^0.19.2",
-    "typedoc-plugin-external-module-name": "^4.0.3",
-    "typedoc-plugin-markdown": "^3.1.1",
+    "typedoc": "^0.20.14",
+    "typedoc-plugin-external-module-name": "^4.0.6",
+    "typedoc-plugin-markdown": "^3.4.0",
     "typescript": "^4.1.3",
-    "val-loader": "^2.1.2",
+    "val-loader": "^3.0.0",
     "virtual-module-webpack-plugin": "^0.4.1",
-    "webpack": "^5.10.3",
-    "webpack-cli": "^4.2.0",
-    "webpack-dev-server": "^3.11.0",
-    "worker-loader": "^3.0.6"
+    "webpack": "^5.14.0",
+    "webpack-cli": "^4.3.1",
+    "webpack-dev-server": "^3.11.2",
+    "worker-loader": "^3.0.7"
   },
   "scripts": {
     "build": "npm run build:clean && npm run build:index && tsc && npm run build:copy && npm run build:assets && npm run build:compat",
