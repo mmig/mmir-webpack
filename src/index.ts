@@ -3,7 +3,7 @@ import { readdirSync } from 'fs';
 import { dirname, join, basename, extname, isAbsolute, resolve } from 'path';
 import { isArray } from 'lodash';
 
-import type { WebpackAppConfig , WebpackModule , WebpackModuleConfiguration } from './index.d';
+import type { WebpackAppConfig , WebpackModule , WebpackModuleConfiguration, WebpackRule } from './index.d';
 import type { BuildConfig } from 'mmir-tooling';
 
 import fileUtils from  'mmir-tooling/utils/filepath-utils';
@@ -310,8 +310,6 @@ function createModuleRules(mmirAppConfig: WebpackAppConfig, buildConfig: BuildCo
 
 function createPlugins(webpackInstance: WebpackModule, alias: {[id: string]: string}, mmirAppConfig: WebpackAppConfig, buildConfig: BuildConfig): Plugin[] {
 
-    // var CResolver = require('./webpack-plugin-custom-resolver.js');
-
     // var EncodingPlugin = require('webpack-encoding-plugin');
 
     // console.log('buildConfig', buildConfig)
@@ -328,10 +326,11 @@ function createPlugins(webpackInstance: WebpackModule, alias: {[id: string]: str
         // ignore modules that are specific for running mmir in node environment:
         new webpackInstance.IgnorePlugin({resourceRegExp: /^xmlhttprequest|worker_threads$/}),
 
+        // // FIXM ignore internal node modules that are often require'd in disabled node-detection code (-> emscripten etc):
+        // new webpackInstance.IgnorePlugin({resourceRegExp: /^crypto|fs|path$/}),
+
         // set custom module-IDs from alias-definitions for mmir-modules (enables mmir.require(<moduleId>))
         new ReplaceModuleIdPlugin(alias, rootDir, /\.((ehtml)|(js(on)?))$/i),
-
-        // new CResolver(alias),//FIXME TEST
 
         // set environment variable WEBPACK_BUILD for enabling webpack-specific code
         new webpackInstance.DefinePlugin({
@@ -399,7 +398,7 @@ function createPlugins(webpackInstance: WebpackModule, alias: {[id: string]: str
         //
         //   Object.assign(context, {
         // 		context: envMedia,	//<- normalize: set context to env/media directory
-        //     regExp: re, ///^\.\/(audiotts|webAudio|ttsMary|webspeechAudioInput|webMicLevels)$/,//<- regExp for included modules of env/media
+        //      regExp: re, ///^\.\/(audiotts|webAudio|ttsMary|webspeechAudioInput|webMicLevels)$/,//<- regExp for included modules of env/media
         // 		request: '.' //<- trigger evaluation of files-names via regExp in env/media
         //   });
         // }),
@@ -475,9 +474,10 @@ function createPlugins(webpackInstance: WebpackModule, alias: {[id: string]: str
 /**
  * HELPER check existing module-rules and exclude mmir-files if necessary
  *
- * @param {Array<webpack/Rule>} moduleRules the module.rules list of the webpack configuration
+ * @param {Array<webpack/Rule>} moduleRules the module.rules list of the webpack configuration (INOUT parameter)
+ * @returns {Array<webpack/Rule>} the (possibly) modified rules
  */
-function modifyModuleRuleFilters(moduleRules): void {
+function modifyModuleRuleFilters(moduleRules: Array<WebpackRule>): Array<WebpackRule> {
 
     if(!moduleRules || moduleRules.length === 0){
         return;
@@ -491,7 +491,7 @@ function modifyModuleRuleFilters(moduleRules): void {
 
         // console.log('checking module.rule ', rule)
 
-        var test = rule.test || (rule.resource? rule.resource.test : null);
+        var test = rule.test || (rule.resource? (rule.resource as any).test : null);
         if(test){
             var isMatch: boolean = false, file: string;
             for(var i=0, size = rawFilePaths.length; !isMatch && i < size; ++i){
@@ -506,6 +506,7 @@ function modifyModuleRuleFilters(moduleRules): void {
         }
     });
 
+    return moduleRules;
 };
 
 /**
@@ -556,8 +557,8 @@ function testFileForModuleRuleCondition(file: string, test: TestFileCondOption |
  * @param  {Array<string>} fileList the file-list which should be added to the exclude condition
  * @param  {webpack/Rule} moduleRule the module rule
  */
-function excludeFilesFromModuleRule(fileList: string[], moduleRule): void {
-    var exclude = moduleRule.exclude || (moduleRule.resource? moduleRule.resource.exclude : null);
+function excludeFilesFromModuleRule(fileList: string[], moduleRule: WebpackRule): void {
+    var exclude = moduleRule.exclude || (moduleRule.resource? (moduleRule.resource as any).exclude : null);
     var exclFunc = fileUtils.createFileTestFunc(fileList, ' for excluding [raw file] from module.rule');
     if(exclude){
         if(Array.isArray(exclude)){
@@ -567,7 +568,7 @@ function excludeFilesFromModuleRule(fileList: string[], moduleRule): void {
             if(moduleRule.exclude){
                 moduleRule.exclude = exclude;
             } else {
-                moduleRule.resource.exclude = exclude;
+                (moduleRule.resource as any).exclude = exclude;
             }
         }
     } else {
@@ -632,6 +633,46 @@ function apply(webpackInstance: WebpackModule, webpackConfig: WebpackModuleConfi
     }
     //check & add exclude-filters (for mmir files/resources) to existing module-rules if necessary:
     modifyModuleRuleFilters(targetList);
+
+    //HACK for webpack >= v4: does add some modules.defaultRules, which may prevent loading *.wasm files as raw files, and instead tries to use an (experimental!!!) wasm-loader
+    if(Array.isArray(webpackConfig.module.defaultRules)){
+
+        modifyModuleRuleFilters(webpackConfig.module.defaultRules as WebpackRule[]);
+
+    } else if(useRulesForLoaders && mmirAppConfig.fixWebpack4DefaultRulesForWASM) {
+        //TODO "auto-fix" by detecting webpack version instead of explicit option fixWebpack4DefaultRulesForWASM?
+        //     (e.g. use require('mmir-tooling/utils/packageUtils').checkPackageVersion('webpack', '= 4.x.x'))
+
+        // copied (slightly modified) default rules from webpack sources:
+        // https://github.com/webpack/webpack/blob/v4.46.0/lib/WebpackOptionsDefaulter.js#L60-L85
+        webpackConfig.module.defaultRules = modifyModuleRuleFilters([
+            {
+                type: "javascript/auto",
+                resolve: {}
+            },
+            {
+                test: /\.mjs$/i,
+                type: "javascript/esm",
+                resolve: {
+                    mainFields:
+                        webpackConfig.target === "web" ||
+                        webpackConfig.target === "webworker" ||
+                        webpackConfig.target === "electron-renderer"
+                            ? ["browser", "main"]
+                            : ["main"]
+                }
+            },
+            {
+                test: /\.json$/i,
+                type: "json"
+            },
+            {
+                test: /\.wasm$/i,
+                type: "webassembly/experimental"
+            }
+        ]);
+    }
+
     for(let i = 0, size = moduleRules.length; i < size; ++i){
         targetList.push(moduleRules[i]);
     }

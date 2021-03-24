@@ -14,7 +14,7 @@
 
 import { WebpackAppConfig as _WebpackAppConfig } from 'mmir-tooling';
 
-import { Configuration as WebpackConfiguration } from 'webpack';
+import { Configuration as WebpackConfiguration, RuleSetRule as WebpackRuleSet } from 'webpack';
 import * as webpack from 'webpack';
 
 /**
@@ -55,5 +55,6 @@ declare namespace mmirWebpackFunc {
 
     export type WebpackModuleConfiguration = WebpackConfiguration;
     export type WebpackModule = typeof webpack;
+    export type WebpackRule = WebpackRuleSet;
 
 }
