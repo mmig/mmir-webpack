@@ -19,7 +19,7 @@
   "main": "index.js",
   "types": "index.d.ts",
   "typesVersions": {
-    "<3.8": {
+    "<3.9": {
       "*": [
         "typings3.6/*"
       ]

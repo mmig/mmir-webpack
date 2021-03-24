@@ -251,7 +251,6 @@ function createModuleRules(mmirAppConfig, buildConfig) {
     return moduleRules;
 }
 function createPlugins(webpackInstance, alias, mmirAppConfig, buildConfig) {
-    // var CResolver = require('./webpack-plugin-custom-resolver.js');
     // var EncodingPlugin = require('webpack-encoding-plugin');
     // console.log('buildConfig', buildConfig)
     var plugins = [
@@ -263,9 +262,10 @@ function createPlugins(webpackInstance, alias, mmirAppConfig, buildConfig) {
         }),
         // ignore modules that are specific for running mmir in node environment:
         new webpackInstance.IgnorePlugin({ resourceRegExp: /^xmlhttprequest|worker_threads$/ }),
+        // // FIXM ignore internal node modules that are often require'd in disabled node-detection code (-> emscripten etc):
+        // new webpackInstance.IgnorePlugin({resourceRegExp: /^crypto|fs|path$/}),
         // set custom module-IDs from alias-definitions for mmir-modules (enables mmir.require(<moduleId>))
         new webpack_plugin_replace_id_js_1.ReplaceModuleIdPlugin(alias, rootDir, /\.((ehtml)|(js(on)?))$/i),
-        // new CResolver(alias),//FIXME TEST
         // set environment variable WEBPACK_BUILD for enabling webpack-specific code
         new webpackInstance.DefinePlugin({
             'WEBPACK_BUILD': JSON.stringify(true),
@@ -303,6 +303,28 @@ function createPlugins(webpackInstance, alias, mmirAppConfig, buildConfig) {
                 resource.resolveOptions = { alias: ca };
             }
         }),
+        // //TEST try to limit/tell webpack the restrictions of require() calls in order to avoid compilation warnings
+        // // TODO enable: limit includes for mmir-lib/lib/env/media/*.js: either by require('./'+<var>) or require('../env/media/'+<var>) or (internal) require('.')
+        // new webpackInstance.ContextReplacementPlugin(/^\.\.?\/?(env\/media)?$/, (context) => {
+        //   // if ( !/[\\/]mmir-lib[\\/]lib[\\/](env[\\/]media|manager)$/.test(context.context) ) return;
+        // 	var envMedia = resolve(rootDir, 'env', 'media');
+        // 	if(resolve(context.context, context.request) !== envMedia) return;
+        //
+        // 	console.log('------------------------------ mmir-lib/env/media/* -> ', context);//, alias)
+        //
+        // 	//TODO create list of required media modules & RegExp outside closure
+        // 	var includeMediaModules = ['audiotts', 'webAudio', 'ttsMary', 'webspeechAudioInput', 'webMicLevels'];
+        // 	var re = new RegExp('^\\./('+ includeMediaModules.join('|') +')(\.js)?$');
+        //
+        //   Object.assign(context, {
+        // 		context: envMedia,	//<- normalize: set context to env/media directory
+        //      regExp: re, ///^\.\/(audiotts|webAudio|ttsMary|webspeechAudioInput|webMicLevels)$/,//<- regExp for included modules of env/media
+        // 		request: '.' //<- trigger evaluation of files-names via regExp in env/media
+        //   });
+        // }),
+        // new EncodingPlugin({
+        //   encoding: 'utf16le'
+        // }),
     ];
     //configure dependencies within WebWorker in case async-execution for grammar is enable for at least 1 grammar:
     // create resource/ID mapping for including async-exec grammars in WebWorker script
@@ -356,7 +378,8 @@ function createPlugins(webpackInstance, alias, mmirAppConfig, buildConfig) {
 /**
  * HELPER check existing module-rules and exclude mmir-files if necessary
  *
- * @param {Array<webpack/Rule>} moduleRules the module.rules list of the webpack configuration
+ * @param {Array<webpack/Rule>} moduleRules the module.rules list of the webpack configuration (INOUT parameter)
+ * @returns {Array<webpack/Rule>} the (possibly) modified rules
  */
 function modifyModuleRuleFilters(moduleRules) {
     if (!moduleRules || moduleRules.length === 0) {
@@ -381,6 +404,7 @@ function modifyModuleRuleFilters(moduleRules) {
             }
         }
     });
+    return moduleRules;
 }
 ;
 /**
@@ -504,6 +528,41 @@ function apply(webpackInstance, webpackConfig, mmirAppConfig) {
     }
     //check & add exclude-filters (for mmir files/resources) to existing module-rules if necessary:
     modifyModuleRuleFilters(targetList);
+    //HACK for webpack >= v4: does add some modules.defaultRules, which may prevent loading *.wasm files as raw files, and instead tries to use an (experimental!!!) wasm-loader
+    if (Array.isArray(webpackConfig.module.defaultRules)) {
+        modifyModuleRuleFilters(webpackConfig.module.defaultRules);
+    }
+    else if (useRulesForLoaders && mmirAppConfig.fixWebpack4DefaultRulesForWASM) {
+        //TODO "auto-fix" by detecting webpack version instead of explicit option fixWebpack4DefaultRulesForWASM?
+        //     (e.g. use require('mmir-tooling/utils/packageUtils').checkPackageVersion('webpack', '= 4.x.x'))
+        // copied (slightly modified) default rules from webpack sources:
+        // https://github.com/webpack/webpack/blob/v4.46.0/lib/WebpackOptionsDefaulter.js#L60-L85
+        webpackConfig.module.defaultRules = modifyModuleRuleFilters([
+            {
+                type: "javascript/auto",
+                resolve: {}
+            },
+            {
+                test: /\.mjs$/i,
+                type: "javascript/esm",
+                resolve: {
+                    mainFields: webpackConfig.target === "web" ||
+                        webpackConfig.target === "webworker" ||
+                        webpackConfig.target === "electron-renderer"
+                        ? ["browser", "main"]
+                        : ["main"]
+                }
+            },
+            {
+                test: /\.json$/i,
+                type: "json"
+            },
+            {
+                test: /\.wasm$/i,
+                type: "webassembly/experimental"
+            }
+        ]);
+    }
     for (let i = 0, size = moduleRules.length; i < size; ++i) {
         targetList.push(moduleRules[i]);
     }
