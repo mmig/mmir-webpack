@@ -1,4 +1,4 @@
-**[mmir-webpack 6.2.0](../README.md)**
+**[mmir-webpack 7.0.0-beta1](../README.md)**
 
 > [Globals](../README.md) / mmir-webpack
 
@@ -37,6 +37,33 @@ the modified (paramater) `webpackConfig`
 
 ## Index
 
-### Interfaces
+### Type aliases
 
-* [WebpackAppConfig](../interfaces/mmir_webpack.webpackappconfig.md)
+* [WebpackAppConfig](mmir_webpack.md#webpackappconfig)
+* [WebpackModule](mmir_webpack.md#webpackmodule)
+* [WebpackModuleConfiguration](mmir_webpack.md#webpackmoduleconfiguration)
+* [WebpackRule](mmir_webpack.md#webpackrule)
+
+## Type aliases
+
+### WebpackAppConfig
+
+Ƭ  **WebpackAppConfig**: \_WebpackAppConfig
+
+___
+
+### WebpackModule
+
+Ƭ  **WebpackModule**: *typeof* webpack
+
+___
+
+### WebpackModuleConfiguration
+
+Ƭ  **WebpackModuleConfiguration**: WebpackConfiguration
+
+___
+
+### WebpackRule
+
+Ƭ  **WebpackRule**: WebpackRuleSet

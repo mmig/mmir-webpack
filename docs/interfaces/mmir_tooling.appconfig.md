@@ -1,4 +1,4 @@
-**[mmir-webpack 6.2.0](../README.md)**
+**[mmir-webpack 7.0.0-beta1](../README.md)**
 
 > [Globals](../README.md) / [mmir-tooling](../modules/mmir_tooling.md) / AppConfig
 
@@ -37,8 +37,6 @@ var appConfig = {
   ↳ [WebpackAppConfig](mmir_webpack.webpackappconfig.md)
 
   ↳ [BuildAppConfig](mmir_tooling.buildappconfig.md)
-
-  ↳ [WebpackAppConfig](mmir_webpack.webpackappconfig.md)
 
 ## Index
 

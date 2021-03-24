@@ -1,4 +1,4 @@
-**[mmir-webpack 6.2.0](../README.md)**
+**[mmir-webpack 7.0.0-beta1](../README.md)**
 
 > [Globals](../README.md) / [mmir-webpack](../modules/mmir_webpack.md) / WebpackAppConfig
 
@@ -44,6 +44,7 @@ var appConfig = {
 * [configuration](mmir_webpack.webpackappconfig.md#configuration)
 * [controllers](mmir_webpack.webpackappconfig.md#controllers)
 * [disableLogging](mmir_webpack.webpackappconfig.md#disablelogging)
+* [fixWebpack4DefaultRulesForWASM](mmir_webpack.webpackappconfig.md#fixwebpack4defaultrulesforwasm)
 * [grammars](mmir_webpack.webpackappconfig.md#grammars)
 * [helpers](mmir_webpack.webpackappconfig.md#helpers)
 * [includeModules](mmir_webpack.webpackappconfig.md#includemodules)
@@ -56,6 +57,7 @@ var appConfig = {
 * [resourcesPath](mmir_webpack.webpackappconfig.md#resourcespath)
 * [resourcesPathOptions](mmir_webpack.webpackappconfig.md#resourcespathoptions)
 * [rootPath](mmir_webpack.webpackappconfig.md#rootpath)
+* [runtimeSettings](mmir_webpack.webpackappconfig.md#runtimesettings)
 * [settings](mmir_webpack.webpackappconfig.md#settings)
 * [states](mmir_webpack.webpackappconfig.md#states)
 * [views](mmir_webpack.webpackappconfig.md#views)
@@ -102,6 +104,22 @@ ___
 
 disable logging in mmir runtime:
 suppresses all logging-output by replacing mmirf/logger with an empty logger implementation
+
+___
+
+### fixWebpack4DefaultRulesForWASM
+
+• `Optional` **fixWebpack4DefaultRulesForWASM**: boolean
+
+HACK:
+`webpack` version 4 does include a default rule for loading WASM files
+that will cause errors due to the fact, that it will try to load mmir-integrated WASM files again.
+
+Enabling this option will overwrite the `webpackConfig.module.defaultRules` option omitting the
+default rule for WASM files.
+
+If you do not need the default rules, this can be enabled as a quick-fix for dealing with
+errors due to loading WASM files.
 
 ___
 
@@ -264,6 +282,21 @@ ___
 *Inherited from [WebpackAppConfig](mmir_webpack.webpackappconfig.md).[rootPath](mmir_webpack.webpackappconfig.md#rootpath)*
 
 used for resolving non-absolute paths: the absolute path to the app's root/sources directory (if omitted the current working directory is used for resolving non-absolute paths)
+
+___
+
+### runtimeSettings
+
+• `Optional` **runtimeSettings**: { [settingsId:string]: any;  }
+
+(for internal use: will be filled/set by compiler)
+
+dictionary for mmir runtime settings:
+ * `"mmirf/settings/configuration"`: the (normalized/merged) `RuntimeConfiguration` for the mmir app (~ `configuration.json`)
+ * `"mmirf/settings/directories"`: the directories/files/URI information for loading/accessing speech-configuration, controllers, views etc. (~ `directories.json`)
+ * `"mmirf/settings/speech/{lang}"`: the speech (input/output) configuration for language code `lang` (~ `lang/speech.json`)
+ * `"mmirf/settings/dictionary/{lang}"`: the dictionary (internat. labels) for language code `lang` (~ `lang/dictionary.json`)
+ * `"mmirf/settings/grammar/{lang}"`: the JSON definition for the grammar of language code `lang` (~ `lang/grammar.json`)
 
 ___
 
