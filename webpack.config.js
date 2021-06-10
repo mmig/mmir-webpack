@@ -6,15 +6,28 @@ var webpackConfig = {
 	mode: 'none',
 	entry: './webpack-main.js', //'./main.js',
 	output: {
-		filename: 'main.js',
+		filename: 'mmir-lib.js',
 		path: path.resolve(__dirname, 'dist'),
 		library: "mmir",
 		libraryTarget: "umd"
+
+		// TEST usable library built
+        //     (NOTE must impl. additional logic for loading workers, raw files
+        //      etc. when including pre-built library
+        //      maybe using WebpackManifestPlugin:
+        //       collect info about workers, raw files etc. within loaders/plugins &
+        //       then injecting the additional info via WebpackManifestPlugin.getCompilerHooks
+        // chunkFormat: "commonjs",
+        // chunkLoading: "require",
+        // clean: true
 	},
 	devServer: {
 		open: false,
 		contentBase: './dist'
-	}
+	},
+    stats: {
+        errorDetails: true
+    }
 };
 
 
@@ -124,6 +137,7 @@ const mmirAppConfig = {
 	// includeModules: ['mmirf/asyncGrammar'],//FIXME should be automatically added if grammarAsyncExecMode and/or grammarOptions.asyncExec
 
 	controllers: ctrlOptions,
+	// controllers: {path: path.resolve('./test-data/empty')},
 	helpers: helperOptions,
 	models: modelOptions,
 
@@ -171,6 +185,11 @@ const mmirAppConfig = {
 };
 
 var modWebpackConfig = require('./index')(webpack, webpackConfig, mmirAppConfig);
+
+// console.log('webpackConfig: ', webpackConfig)
+// for(var n in webpackConfig.resolve.alias)
+
+// console.log('mmirAppConfig: ', JSON.stringify(mmirAppConfig, null, 2))
 
 //NOTE: require('./index')(...) returns modified webpackConfig, so actually
 //      webpackConfig === modWebpackConfig
