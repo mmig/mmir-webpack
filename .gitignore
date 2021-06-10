@@ -3,6 +3,6 @@
 /dist*
 /www*
 /mmir
-/test-data
+/test-*
 /unused
 /build
