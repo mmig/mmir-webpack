@@ -2,6 +2,8 @@
 import { existsSync } from 'fs';
 import { sep, normalize, resolve } from 'path';
 
+import { Compiler, Module } from 'webpack';
+
 const dir = __dirname;
 
 const reNormalize = sep !== '/'? new RegExp(sep.replace(/\\/g, '\\\\'), 'g') : null;
@@ -12,16 +14,36 @@ function idFromPath(path: string): string {
     return path;
 }
 
-function getModId(_modPaths: {[id: string]: string}, path: string, fileExtensions: RegExp, originalId: string): string {
+function lookUpAlias(aliasId: string, aliasMap: {[id: string]: string}): string | undefined {
+    // NOTE webpack aliases may have suffix $ which indicates that the alias must match exactly (i.e. is not part of the ID itself!)
+    return aliasMap[aliasId + '$'] || aliasMap[aliasId];
+}
+
+const reCleanLookUpId = /\$$/;
+function normalizeLookUpId(lookUpId: string): string | undefined {
+    // NOTE webpack aliases may have suffix $ which indicates that the alias must match exactly -> needs to be removed, since it is not part of the ID itself
+    return lookUpId.replace(reCleanLookUpId, '');
+}
+
+/**
+ * tries to find the (raw) module ID for a path (or the module's original ID)
+ *
+ * @param  modPaths the mapping for (raw) module IDs (i.e. webpack alias definitions) to file/directory paths
+ * @param  path the path for which to find the (raw) module ID (if `undefined`, the `originalId` is used for finding the appropriate ID)
+ * @param  fileExtensions the file extension (if there is any) of param `path`
+ * @param  originalId the original module ID
+ * @return the "raw" module ID (i.e. webpack alias entry); may need to be normalized before further usage, see [[normalizeLookUpId]]
+ */
+function getModId(modPaths: {[id: string]: string}, path: string | undefined, fileExtensions: RegExp, originalId: string): string {
     if(!path){
-        // console.log(' ReplaceModuleIdPlugin: handle empty path for (original) ID '+originalId+' -> alias: ', _modPaths[originalId], _modPaths);//DEBUG
+        // console.log(' ReplaceModuleIdPlugin: handle empty path for (original) ID '+originalId+' -> alias: ', modPaths[originalId], modPaths);//DEBUG
         if(originalId){
-            if(_modPaths[originalId]){
+            if(lookUpAlias(originalId, modPaths)){
                 // console.log(' ReplaceModuleIdPlugin: handle empty path, but original ID '+originalId+' has module ID entry, using the orginial ID...');//DEBUG
                 return originalId;
             }
             var normalizedOrigId = idFromPath(originalId);
-            if(_modPaths[normalizedOrigId]){
+            if(lookUpAlias(normalizedOrigId, modPaths)){
                 // console.log(' ReplaceModuleIdPlugin: handle empty path, but normalized original ID '+normalizedOrigId+' has module ID entry, using the normalized ID...');//DEBUG
                 return normalizedOrigId;
             }
@@ -32,8 +54,8 @@ function getModId(_modPaths: {[id: string]: string}, path: string, fileExtension
     clpath = clpath === path? null : clpath;
     let val: string;
     const results: string[] = [];
-    for (var p in _modPaths) {
-        val = _modPaths[p];
+    for (var p in modPaths) {
+        val = modPaths[p];
         if (val === path || val === clpath) {
             results.push(p);
         } else if(clpath && clpath.indexOf(val) === 0){
@@ -68,7 +90,7 @@ function doGetAbsolutePath(ctxPath: string, list: string[], id: string) {
     }
 }
 
-function getAbsolutePath(compiler, mmirDir: string, id: string) {
+function getAbsolutePath(compiler: Compiler, mmirDir: string, id: string) {
     return doGetAbsolutePath(compiler.options.context, [process.cwd(), dir, mmirDir], id);
 }
 
@@ -81,9 +103,9 @@ export class ReplaceModuleIdPlugin {
             // console.log('ReplaceModuleIdPlugin.constructor: alias -> ', JSON.stringify(alias));
     }
 
-    apply(compiler) {
+    apply(compiler: Compiler) {
 
-        var processModules = (modules) => {
+        var processModules = (modules: Module[]) => {
             // console.log('ReplaceModuleIdPlugin.beforeModuleIds: ', modules.filter(function(mod){return /parsingResult/.test(mod.rawRequest)}));
 
             const aliasLookup = this.alias;
@@ -93,30 +115,42 @@ export class ReplaceModuleIdPlugin {
 
             modules.forEach(function(module) {
                 if (module.id === null && module.libIdent) {
-                    let id = normalize( module.libIdent({
+
+                    const resolvedId: string = module.libIdent({
                         context: compiler.options.context
-                    }));
-                    const fullpath = getAbsolutePath(compiler, this.mmirDir, id);
+                    });
+                    let lookUpId: string;
+                    let id: string;
+                    if(resolvedId){
+                        id = normalize(resolvedId);
+                        const fullpath = getAbsolutePath(compiler, this.mmirDir, id);
 
-                    // console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ', id, ', fullpath ', fullpath); //, ', module ', module);//DEBUG
+                        // console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ', id, ', fullpath ', fullpath); //, ', module ', module);//DEBUG
 
-                    const lookUpId = getModId(aliasLookup, fullpath, fileExtensions, id);
+                        lookUpId = getModId(aliasLookup, fullpath, fileExtensions, id);
 
-                    // if(/mmir-plugin-/.test(fullpath)) console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ', fullpath ', fullpath, ' -> ', lookUpId? lookUpId : 'UNKNOWN');//, ', module ', module);//DEBUG
-                    // if(/mmir-plugin-/.test(id)) console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ', fullpath ', fullpath, ' -> ', lookUpId? lookUpId : 'UNKNOWN');//, ', module ', module);//DEBUG
-
+                        // if(/mmir-plugin-/.test(fullpath)) console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ', fullpath ', fullpath, ' -> ', lookUpId? lookUpId : 'UNKNOWN');//, ', module ', module);//DEBUG
+                        // if(/mmir-plugin-/.test(id)) console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ', fullpath ', fullpath, ' -> ', lookUpId? lookUpId : 'UNKNOWN');//, ', module ', module);//DEBUG
+                    } else {
+                        console.log('  ERROR ReplaceModuleIdPlugin.beforeModuleIds: not resolved ', module)
+                    }
                     if (lookUpId) {
 
-                        // if(/controller/.test(lookUpId)) console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ' -> ', lookUpId,', fullpath ', fullpath);//, ', module ', module);//DEBUG
+                        // if(/controller/.test(lookUpId)) console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ' -> ', lookUpId);//DEBUG
 
-                        id = lookUpId;
+                        // normalize the "raw" lookup ID
+                        id = normalizeLookUpId(lookUpId);
 
                         module.libIdent = function() {
                             return id;
                         }
 
                         module.id = id;
+                        // console.log('TEST replaced id result: ', id)
                     }
+                    // else if(/mmirf\\controller\\/.test(aliasLookup)){
+                    //
+                    // }
                 } else if(process.env.verbose) {
                     console.log('[WARN] ReplaceModuleIdPlugin.beforeModuleIds: cannot process module ', module);
                 }
@@ -124,7 +158,8 @@ export class ReplaceModuleIdPlugin {
         };
 
         if (!compiler.hooks || !compiler.hooks.compilation) {
-            compiler.plugin('compilation', function(compilation) {
+            // backwards compatiblity with webpack 3
+            (compiler as any).plugin('compilation', function(compilation: any) {
                 compilation.plugin('before-module-ids', processModules)
             });
         } else {

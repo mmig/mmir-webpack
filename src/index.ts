@@ -1,6 +1,5 @@
 
-import { readdirSync } from 'fs';
-import { dirname, join, basename, extname, isAbsolute, resolve } from 'path';
+import { dirname, join, basename, isAbsolute, resolve } from 'path';
 import { isArray } from 'lodash';
 
 import type { WebpackAppConfig , WebpackModule , WebpackModuleConfiguration, WebpackRule } from './index.d';
@@ -19,6 +18,8 @@ import { ReplaceModuleIdPlugin } from './utils/webpack-plugin-replace-id.js';
 import resourcesConfig from './webpack-resources-config';
 import cliUtils from 'mmir-tooling/utils/cli-utils';
 
+import { createResolveAlias , getAliasEntry , setAliasEntry , isExactAliasEntry } from './utils/webpack-resolve-utils';
+
 import logUtils from 'mmir-tooling/utils/log-utils';
 
 const log = logUtils.log;
@@ -30,72 +31,13 @@ type Plugin = any;//FIXME webpack plugin ({ apply: (arg0: Resolver) => void } | 
 
 // log('mmir-lib: ', require('mmir-lib'))
 
+/** root directory of the mmir-lib package */
 const rootDir = dirname(require.resolve('mmir-lib'));
+/** root directory of the mmir-webpack package (i.e. this package) */
 const webpackRootDir = __dirname;
 
 // log('mmir-lib path: ', rootDir);
 // log('mmir-webpack path: ', webpackRootDir);
-
-/**
- *	expand require.js package definitions & add them to the alias dictionary
- *
- * TODO extract this function to mmir-tooling?
- *
- * @param  {string} rootDir the mmir root dir (usually node_modules/mmir-lib/lib/ )
- * @param  {{[id: string]: string}} alias dictionary for module ID/alias -> module-path (INOUT parameter)
- * @param  {Array<{name: string, location: string}>} resourcesConfigPackages list of require.js package definitions
- */
-function expandPackageResources(rootDir: string, alias: {[id: string]: string}, resourcesConfigPackages: {name: string, location: string}[]){
-
-    var getFiles = function(dir: string, relDir: string, baseId?: string): void {
-        var files = readdirSync(dir);
-        files.forEach(function(f){
-            var absPath = join(dir, f);
-            var relPath = relDir? join(relDir, f) : f;
-            if(fileUtils.isDirectory(absPath)){
-                getFiles(dir, relPath);
-            } else {
-                //create id for file/module (without file-extension):
-                var fid = fileUtils.normalizePath(join(baseId, basename(relPath, extname(relPath))));
-                alias[fid] = absPath;
-                // console.log('  added package module ', fid, ' -> ', absPath);
-            }
-        });
-    };
-
-    // list: Array<{name: string, location: string}>
-    resourcesConfigPackages.forEach(function(p: &{location: string, name: string}){
-        getFiles(join(rootDir, p.location), '', p.name);
-    });
-
-}
-
-function createResolveAlias(mmirAppConfig: WebpackAppConfig): {[id: string]: string} {
-
-    var paths = resourcesConfig.paths;
-
-    var alias = {}, p: string;
-    for (var n in paths) {
-        p = paths[n];
-        if(/^build-tool\//.test(n)){
-            alias[n] = isAbsolute(p)? p : join(webpackRootDir, p);
-        } else {
-            alias[n] = isAbsolute(p)? p : join(rootDir, p);
-        }
-    }
-
-    if(Array.isArray(resourcesConfig.packages)){
-        expandPackageResources(rootDir, alias, resourcesConfig.packages);
-    }
-
-    appConfigUtils.addAliasFrom(mmirAppConfig, alias);
-
-    if(mmirAppConfig.disableLogging){
-        alias['mmirf/logger'] = alias['mmirf/loggerDisabled'];
-    }
-
-    return alias;
-}
 
 function enableJQuery(mmirAppConfig: WebpackAppConfig): void {
     mmirAppConfig.jquery = true;
@@ -269,14 +211,16 @@ function createModuleRules(mmirAppConfig: WebpackAppConfig, buildConfig: BuildCo
             return new webpackInstance.NormalModuleReplacementPlugin(
                 /mmirf\/settings\/(configuration|dictionary|grammar|speech)\//i,
                 function(resource) {
-                    if(alias[resource.request]){
+                    const aliasEntry = getAliasEntry(resource.request, alias);
+                    if(aliasEntry){
 
-                        // log('NormalModuleReplacementPlugin: redirecting resource: ', resource, ' -> ', alias[resource.request]);//DEBU
+                        // log('NormalModuleReplacementPlugin: redirecting resource: ', resource, ' -> ', aliasEntry);//DEBU
 
-                        // resource.request = alias[resource.request];//DISABLED hard-rewire request ... instead, add an alias resolver (see below)
+                        // resource.request = aliasEntry;//DISABLED hard-rewire request ... instead, add an alias resolver (see below)
 
-                        var ca = {};
-                        ca[resource.request] = alias[resource.request];
+                        const ca = {};
+                        const isExact = isExactAliasEntry(resource.request, alias);
+                        setAliasEntry(resource.request, aliasEntry, ca, isExact);
                         resource.resolveOptions = {alias: ca};
                     }
                 }
@@ -324,7 +268,7 @@ function createPlugins(webpackInstance: WebpackModule, alias: {[id: string]: str
         }),
 
         // ignore modules that are specific for running mmir in node environment:
-        new webpackInstance.IgnorePlugin({resourceRegExp: /^xmlhttprequest|worker_threads$/}),
+        new webpackInstance.IgnorePlugin({resourceRegExp: /^(?:xmlhttprequest|worker_threads|webworker-threads)$/}),
 
         // // FIXM ignore internal node modules that are often require'd in disabled node-detection code (-> emscripten etc):
         // new webpackInstance.IgnorePlugin({resourceRegExp: /^crypto|fs|path$/}),
@@ -341,10 +285,17 @@ function createPlugins(webpackInstance: WebpackModule, alias: {[id: string]: str
         new webpackInstance.NormalModuleReplacementPlugin(
             /requirejs-main\.js/,
             function(resource) {
-                if(resource.rawRequest === 'mmir-lib'){//<- only redirect, if the file was requested via 'mmir-lib' (e.g. if requested directly via its path, do not redirect)
+                if(resource.rawRequest === 'mmir-lib' || /*FIX HACK webpack v5: no field rawRequest -> use field request, TODO proper migration */ resource.request === 'mmir-lib'){//<- only redirect, if the file was requested via 'mmir-lib' (e.g. if requested directly via its path, do not redirect)
                     // log('replacing module ', resource.request, ' -> ', join(webpackRootDir, 'webpack-main.js'))//, ', for ', resource);
                     resource.request = join(webpackRootDir, 'webpack-main.js');
+                    // FIX webpack4: need to set resource.resource field:
                     resource.resource = resource.request;
+                    // FIX webpack v5: need to set resource in field createData
+                    //     see implementation details for NormalModuleReplacementPlugin
+                    //     https://github.com/webpack/webpack/blob/ff1b314d30fbf996dc0acf37b7b789eab8ca33e1/lib/NormalModuleReplacementPlugin.js#L45
+                    if(resource.createData){
+                        resource.createData.resource = resource.request;
+                    }
                 }
                 // else {
                 // 	log('ingnoring module replacement for ', resource.request);
@@ -357,12 +308,16 @@ function createPlugins(webpackInstance: WebpackModule, alias: {[id: string]: str
             /^mmirf\/util\/loadFile(__webpack_proxied)?$/,
             function(resource) {
                 if(/__webpack_proxied$/.test(resource.request)){
-                    var modPath = resolve(alias['mmirf/util'], 'loadFile.js');
+                    var modPath = resolve(getAliasEntry('mmirf/util', alias), 'loadFile.js');
                     // log('------------- replacing module ', resource.request, ' -> ', modPath);
                     resource.request = modPath;
                 } else {
-                    // log('############# replacing module ', resource.request, ' -> ', alias['mmirf/util/resourceLoader']);
-                    resource.request = alias['mmirf/util/resourceLoader'];
+                    // log('############# replacing module ', resource.request, ' -> ', getAliasEntry('mmirf/util/resourceLoader', alias));
+                    resource.request = getAliasEntry('mmirf/util/resourceLoader', alias);
+                }
+                // FIX webpack v5: need to set resource in field createData
+                if(resource.createData){
+                    resource.createData.resource = resource.request;
                 }
             }
         ),
@@ -372,13 +327,16 @@ function createPlugins(webpackInstance: WebpackModule, alias: {[id: string]: str
         new webpackInstance.NormalModuleReplacementPlugin(
             /mmirf\/(view|controller|grammar|helper|model|scxml)\//i,
             function(resource) {
-                if(alias[resource.request]){
+                const aliasEntry = getAliasEntry(resource.request, alias);
+                if(aliasEntry){
 
-                    // log('NormalModuleReplacementPlugin: redirecting resource: ', resource, ' -> ', alias[resource.request]);
+                    // log('NormalModuleReplacementPlugin: redirecting resource: ', resource, ' -> ', aliasEntry);
 
-                    var ca = {};
-                    ca[resource.request] = alias[resource.request];
+                    const ca = {};
+                    const isExact = isExactAliasEntry(resource.request, alias);
+                    setAliasEntry(resource.request, aliasEntry, ca, isExact);
                     resource.resolveOptions = {alias: ca};
+                    // console.log('NormalModuleReplacementPlugin: redirecting resource: -> ', resource.resolveOptions);
                 }
             }
         ),
@@ -426,7 +384,7 @@ function createPlugins(webpackInstance: WebpackModule, alias: {[id: string]: str
         if(isAsyncExec){
 
             var ContextElementDependency = require('webpack/lib/dependencies/ContextElementDependency');
-            var createAsyncGrammarContextMap = (_fs, callback) => {
+            var createAsyncGrammarContextMap = (_fs: any, callback: any) => {
                 // console.log('###################### ContextReplacementPlugin.newContentCreateContextMap() -> ', callback)
                 callback(null, execAsyncGrammarIdMap);
             };
@@ -678,7 +636,7 @@ function apply(webpackInstance: WebpackModule, webpackConfig: WebpackModuleConfi
     }
 
     //add alias resolving:
-    const alias = createResolveAlias(mmirAppConfig);
+    const alias = createResolveAlias(mmirAppConfig, rootDir, webpackRootDir);
     if(!webpackConfig.resolve){
         webpackConfig.resolve = {alias: alias};
     } else {
