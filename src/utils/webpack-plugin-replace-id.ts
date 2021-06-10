@@ -94,6 +94,10 @@ function getAbsolutePath(compiler: Compiler, mmirDir: string, id: string) {
     return doGetAbsolutePath(compiler.options.context, [process.cwd(), dir, mmirDir], id);
 }
 
+export interface FixedIdModule extends Module {
+    libIdent(options: any): string;
+}
+
 //based on https://stackoverflow.com/a/34637718/4278324
 
 export class ReplaceModuleIdPlugin {

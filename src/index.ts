@@ -13,12 +13,14 @@ import grammarUtils from 'mmir-tooling/grammar/grammar-utils';
 import appConfigUtils from './utils/webpack-module-init-gen.js';
 import workerLoaderUtils from './utils/webpack-worker-loader-utils';
 
-import { ReplaceModuleIdPlugin } from './utils/webpack-plugin-replace-id.js';
+import { ReplaceModuleIdPlugin, FixedIdModule } from './utils/webpack-plugin-replace-id.js';
 
 import resourcesConfig from './webpack-resources-config';
 import cliUtils from 'mmir-tooling/utils/cli-utils';
 
 import { createResolveAlias , getAliasEntry , setAliasEntry , isExactAliasEntry } from './utils/webpack-resolve-utils';
+
+import { WebpackError, Compilation } from 'webpack';
 
 import logUtils from 'mmir-tooling/utils/log-utils';
 
@@ -534,6 +536,17 @@ function excludeFilesFromModuleRule(fileList: string[], moduleRule: WebpackRule)
     }
 };
 
+function createIgnoreWepackWarningsFunction(): (error: WebpackError, compilation: Compilation) => boolean {
+
+    return function(error: WebpackError, _compilation: Compilation){
+        // console.log('ignoreWarnings', error);//, compilation);
+        if(/Critical dependency: require function is used in a way in which dependencies cannot be statically extracted/.test(error.message)){
+            return (error?.module as FixedIdModule)?.libIdent('') === 'mmirf/main';
+        }
+        return false;
+    }
+}
+
 /**
  * apply webpack configuration for mmir-lib to an existing webpack configuration
  *
@@ -548,7 +561,7 @@ function apply(webpackInstance: WebpackModule, webpackConfig: WebpackModuleConfi
 
     cliUtils.parseCli();
 
-    var useRulesForLoaders = webpackInstance.version && parseFloat(webpackInstance.version) >= 4? true : false;
+    const useRulesForLoaders = webpackInstance.version && parseFloat(webpackInstance.version) >= 4? true : false;
 
     if(typeof mmirAppConfig === 'string'){
         mmirAppConfig = JSON.parse(mmirAppConfig);
@@ -662,6 +675,17 @@ function apply(webpackInstance: WebpackModule, webpackConfig: WebpackModuleConfi
 
     //add webworker loader configuration
     workerLoaderUtils.apply(webpackConfig, rootDir, useRulesForLoaders);
+
+    //ignore known errors when compiling mmir-lib
+    const canIgnoreWarnings = webpackInstance.version && parseFloat(webpackInstance.version) >= 5? true : false;
+    if(canIgnoreWarnings){
+        if(!webpackConfig.ignoreWarnings){
+            webpackConfig.ignoreWarnings = [];
+        } else if(!isArray(webpackConfig.ignoreWarnings)){
+            webpackConfig.ignoreWarnings = [ webpackConfig.ignoreWarnings ];
+        }
+        webpackConfig.ignoreWarnings.push(createIgnoreWepackWarningsFunction());
+    }
 
     return webpackConfig;
 };
