@@ -29,25 +29,25 @@
     "lib": "./dist"
   },
   "devDependencies": {
-    "@types/fs-extra": "^9.0.8",
-    "@types/lodash": "^4.14.168",
+    "@types/fs-extra": "^9.0.11",
+    "@types/lodash": "^4.14.170",
     "cross-var": "^1.1.0",
     "eclint": "^2.8.1",
     "file-loader": "^6.2.0",
     "fs-extra": "^9.1.0",
     "jquery": "^3.6.0",
-    "mmir-lib": "^7.0.0-beta2",
+    "mmir-lib": "^7.0.0-beta4",
     "mmir-plugin-exports": "^2.5.3",
     "raw-loader": "^4.0.2",
     "typedoc": "^0.19.2",
     "typedoc-plugin-external-module-name": "^4.0.6",
     "typedoc-plugin-markdown": "^3.1.1",
-    "typescript": "^4.2.3",
-    "val-loader": "^3.1.0",
-    "virtual-module-webpack-plugin": "^0.4.1",
-    "webpack": "^5.28.0",
-    "webpack-cli": "^4.5.0",
+    "typescript": "^4.3.2",
+    "val-loader": "^4.0.0",
+    "webpack": "^5.38.1",
+    "webpack-cli": "^4.7.2",
     "webpack-dev-server": "^3.11.2",
+    "webpack-virtual-modules": "^0.4.3",
     "worker-loader": "^3.0.8"
   },
   "scripts": {
@@ -66,14 +66,14 @@
   },
   "dependencies": {
     "lodash": "^4.17.21",
-    "mmir-tooling": "^7.0.0-beta2"
+    "mmir-tooling": "^7.0.0-beta3"
   },
   "peerDependencies": {
-    "mmir-lib": "^7.0.0-beta1",
+    "mmir-lib": "^7.0.0-beta4",
     "webpack": ">=3.0.0",
     "file-loader": ">=3.0.0",
     "raw-loader": ">=3.0.0",
-    "virtual-module-webpack-plugin": ">=0.4.1",
+    "webpack-virtual-modules": ">=0.4.1",
     "val-loader": ">=1.1.1",
     "worker-loader": ">=2.0.0"
   }
