@@ -6,7 +6,7 @@ import packageUtils from './package-utils';
 import resources from '../webpack-resources-config.js';
 import { WebpackModuleConfiguration } from '../index.d';
 
-function createWebWorkerLoaderConfig(rootDir: string): {test: (path: string) => boolean, use: {loader: 'worker-loader', options: {[option:string]: any}}} {
+function createWebWorkerLoaderConfig(rootDir: string, isWebpack3: boolean): {test: (path: string) => boolean, use: {loader: 'worker-loader', options: {[option:string]: any}}} {
 
     const webworkerPaths = resources.workers.map(function(val: string){
         return fileUtils.normalizePath(path.isAbsolute(val)? val : path.join(rootDir, val));
@@ -18,7 +18,8 @@ function createWebWorkerLoaderConfig(rootDir: string): {test: (path: string) => 
     const testWebWorkerFunc = fileUtils.createFileTestFunc(webworkerPaths, ' for [web worker]');
 
     //create compatiblity options: for worker-loader < 3.x use option-name "name", otherwise "filename";
-    const options = packageUtils.setOptionIf({}, 'filename', 'name', 'worker-[name].[hash].js', false, 'worker-loader', '>= 3.0.0');
+    const fileNameTemplate = isWebpack3? 'worker-[name].[hash].js' : 'worker-[name].[contenthash].js';
+    const options = packageUtils.setOptionIf({}, 'filename', 'name', fileNameTemplate, false, 'worker-loader', '>= 3.0.0');
 	//create compatiblity options for worker-loader < 3.x: must set esModule to false (and for lower worker-versions, must not set the option)
 	packageUtils.setOptionIf(options, 'esModule', null, false, false, 'worker-loader', '>= 3.0.0');
 
@@ -34,7 +35,7 @@ function createWebWorkerLoaderConfig(rootDir: string): {test: (path: string) => 
 export = {
     config: null,
     apply: function(webpackConfig: WebpackModuleConfiguration, rootDir: string, useRulesForLoaders: boolean): WebpackModuleConfiguration {
-        var webWorkerLoaderConfig = createWebWorkerLoaderConfig(rootDir);
+        var webWorkerLoaderConfig = createWebWorkerLoaderConfig(rootDir, !useRulesForLoaders);
         this.config = webWorkerLoaderConfig;
         webpackConfig = webpackConfig || {};
         if (!webpackConfig.module) {
