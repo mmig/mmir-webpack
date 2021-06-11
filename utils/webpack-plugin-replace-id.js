@@ -118,13 +118,12 @@ class ReplaceModuleIdPlugin {
         // console.log('ReplaceModuleIdPlugin.constructor: alias -> ', JSON.stringify(alias));
     }
     apply(compiler) {
-        var processModules = (modules) => {
+        var processModules = (modules, compilation) => {
             // console.log('ReplaceModuleIdPlugin.beforeModuleIds: ', modules.filter(function(mod){return /parsingResult/.test(mod.rawRequest)}));
             const aliasLookup = this.alias;
             const fileExtensions = this.fileExtensions;
-            const compilation = this._compilation;
             // console.log('ReplaceModuleIdPlugin.beforeModuleIds: current dir "'+__dirname+'", mmir-lib dir "'+this.mmirDir+'", checking '+JSON.stringify(aliasLookup)); //DEBUG
-            modules.forEach(function (module) {
+            Array.from(modules).forEach(function (module) {
                 if (getWebpackModuleId(module, compilation.chunkGraph) === null && module.libIdent) {
                     const resolvedId = module.libIdent({
                         context: compiler.options.context
@@ -143,7 +142,7 @@ class ReplaceModuleIdPlugin {
                         log_utils_1.log('[INFO] ReplaceModuleIdPlugin.beforeModuleIds: not resolved ', module);
                     }
                     if (lookUpId) {
-                        // if(/controller/.test(lookUpId)) console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ' -> ', lookUpId);//DEBUG
+                        // console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ', id, ' -> ', normalizeLookUpId(lookUpId)); //, ', module ', module);//DEBUG
                         // normalize the "raw" lookup ID
                         id = normalizeLookUpId(lookUpId);
                         module.libIdent = function () {
@@ -164,15 +163,16 @@ class ReplaceModuleIdPlugin {
         if (!compiler.hooks || !compiler.hooks.compilation) {
             // backwards compatiblity with webpack 3
             compiler.plugin('compilation', function (compilation) {
-                compilation.plugin('before-module-ids', processModules);
+                compilation.plugin('before-module-ids', (modules) => {
+                    processModules(modules, compilation);
+                });
             });
         }
         else {
             compiler.hooks.compilation.tap('ReplaceModuleIdPlugin', compilation => {
-                // NOTE cannot just store compilation.chunkGraph, since at this point it is not initialized yet
-                //      -> store compilation itself: when beforeModuleIds hook is invoked, the compilation.chunkGraph should be available in webpack5
-                this._compilation = compilation;
-                compilation.hooks.beforeModuleIds.tap('ReplaceModuleIdPlugin', processModules);
+                compilation.hooks.beforeModuleIds.tap('ReplaceModuleIdPlugin', (modules) => {
+                    processModules(modules, compilation);
+                });
             });
         }
     }

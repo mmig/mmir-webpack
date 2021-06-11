@@ -8,7 +8,6 @@ export declare class ReplaceModuleIdPlugin {
     };
     mmirDir: string;
     fileExtensions: RegExp;
-    private _compilation?;
     constructor(alias: {
         [id: string]: string;
     }, mmirDir: string, fileExtensions: RegExp);

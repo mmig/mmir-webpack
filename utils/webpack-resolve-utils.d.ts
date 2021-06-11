@@ -54,12 +54,19 @@ export declare function setAliasEntry(aliasId: string, aliasEntry: string, alias
  *
  * @param  {{paths?: {[moduleId: string]: string}}} mmirAppConfig the app-specific configuration: applies module-path-specifications from mmirAppConfig.paths
  * @param  {[{[moduleId: string]: string}]} alias the (default) mapping of module IDs to (absolute) paths
+ * @returns a list of alias entries that should be in-exact (i.e. can be expanded by webpack alias resolver)
  */
 export declare function addAliasFrom(mmirAppConfig: AppConfig | BuildAppConfig | WebpackAppConfig, alias: {
     [moduleId: string]: string;
-}): void;
+}): undefined | {
+    aliasId: string;
+    absolutePath: string;
+}[];
 /**
  *	expand require.js package definitions & add them to the alias dictionary
+ *
+ * NOTE: this is not needed by webpacks module resolver (i.e. to find modules within the package definition), but
+ *       it is need for preserving the module IDs within the package, i.e. for use of `mmir.require(<module within the package>)`
  *
  * TODO extract this function to mmir-tooling?
  *

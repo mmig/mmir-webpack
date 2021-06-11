@@ -578,6 +578,11 @@ function apply(webpackInstance, webpackConfig, mmirAppConfig) {
             webpackConfig.ignoreWarnings = [webpackConfig.ignoreWarnings];
         }
         webpackConfig.ignoreWarnings.push(createIgnoreWepackWarningsFunction());
+        if (Array.isArray(mmirAppConfig.webpackIgnoreWarnings)) {
+            for (const iw of mmirAppConfig.webpackIgnoreWarnings) {
+                webpackConfig.ignoreWarnings.push(iw);
+            }
+        }
     }
     return webpackConfig;
 }
