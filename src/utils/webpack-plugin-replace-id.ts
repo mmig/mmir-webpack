@@ -4,6 +4,8 @@ import { sep, normalize, resolve } from 'path';
 
 import { Compiler, Module, Compilation, ChunkGraph } from 'webpack';
 
+import { log } from 'mmir-tooling/utils/log-utils';
+
 const dir = __dirname;
 
 const reNormalize = sep !== '/'? new RegExp(sep.replace(/\\/g, '\\\\'), 'g') : null;
@@ -159,7 +161,7 @@ export class ReplaceModuleIdPlugin {
                         // if(/mmir-plugin-/.test(fullpath)) console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ', fullpath ', fullpath, ' -> ', lookUpId? lookUpId : 'UNKNOWN');//, ', module ', module);//DEBUG
                         // if(/mmir-plugin-/.test(id)) console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ', fullpath ', fullpath, ' -> ', lookUpId? lookUpId : 'UNKNOWN');//, ', module ', module);//DEBUG
                     } else {
-                        console.log('  ERROR ReplaceModuleIdPlugin.beforeModuleIds: not resolved ', module)
+                        log('[INFO] ReplaceModuleIdPlugin.beforeModuleIds: not resolved ', module);
                     }
                     if (lookUpId) {
 
@@ -179,7 +181,7 @@ export class ReplaceModuleIdPlugin {
                     //
                     // }
                 } else if(process.env.verbose) {
-                    console.log('[WARN] ReplaceModuleIdPlugin.beforeModuleIds: cannot process module ', module);
+                    log('[INFO] ReplaceModuleIdPlugin.beforeModuleIds: cannot process module ', module);
                 }
             }, this);
         };
