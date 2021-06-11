@@ -1,6 +1,6 @@
 
 import { isAbsolute, join, basename, extname } from 'path';
-import { readdirSync } from 'fs';
+import { readdirSync, existsSync } from 'fs';
 
 import { AppConfig , BuildAppConfig, WebpackAppConfig } from 'mmir-tooling';
 import { isWebpackConfig } from 'mmir-tooling/tools/type-utils';
@@ -9,6 +9,10 @@ import { warn } from 'mmir-tooling/utils/log-utils';
 
 import fileUtils from  'mmir-tooling/utils/filepath-utils';
 import resourcesConfig from '../webpack-resources-config';
+
+function isExistingDirectory(absPath: string): boolean {
+    return existsSync(absPath) && fileUtils.isDirectory(absPath);
+}
 
 /**
  * get entry for (webpack) alias entry
@@ -111,7 +115,7 @@ export function addAliasFrom(mmirAppConfig: AppConfig | BuildAppConfig | Webpack
             //      do not create "extact match entry", i.e. those may get expanded by webpack when resolving
             // ... but do this only, if there is not already an exact-match entry: if there is one, do replace the exact-match entry
             absPath = isAbs? p : join(appRoot, p);
-            setAliasEntry(n, absPath, alias, !isAbs);
+            setAliasEntry(n, absPath, alias, !isExistingDirectory(absPath));
         }
         // log('set paths to -> ', alias);
     }
@@ -126,6 +130,9 @@ export function addAliasFrom(mmirAppConfig: AppConfig | BuildAppConfig | Webpack
 
 /**
  *	expand require.js package definitions & add them to the alias dictionary
+ *
+ * NOTE: this is not needed by webpacks module resolver (i.e. to find modules within the package definition), but
+ *       it is need for preserving the module IDs within the package, i.e. for use of `mmir.require(<module within the package>)`
  *
  * TODO extract this function to mmir-tooling?
  *
@@ -163,6 +170,7 @@ export function createResolveAlias(mmirAppConfig: WebpackAppConfig, mmirLibRootD
     var paths = resourcesConfig.paths;
 
     const hasPackages = Array.isArray(resourcesConfig.packages);
+    const packageIds = hasPackages? new Set<string>(resourcesConfig.packages.map(item => item.name)) : null;
 
     var alias = {}, p: string;
     for (var n in paths) {
@@ -171,12 +179,12 @@ export function createResolveAlias(mmirAppConfig: WebpackAppConfig, mmirLibRootD
             setAliasEntry(n, isAbsolute(p)? p : join(webpackRootDir, p), alias, true);
         } else {
             const isAbs = isAbsolute(p);
-            const isPackage = !isAbs && hasPackages && resourcesConfig.packages.findIndex(item => item.name === n) !== -1;
+            const isPackage = !isAbs && hasPackages && packageIds.has(n);
             const absPath = isAbs? p : join(mmirLibRootDir, p);
             // NOTE for package-entries (i.e. directories) and entries with absolute paths (most likely user defined entries),
             //      do not create "extact match entry", i.e. those may get expanded by webpack when resolving
             // ... but do this only, if there is not already an exact-match entry: if there is one, do replace the exact-match entry
-            setAliasEntry(n, absPath, alias, !isAbs && !isPackage);
+            setAliasEntry(n, absPath, alias, !isPackage && !isExistingDirectory(absPath));
         }
     }
 
