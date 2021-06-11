@@ -2,7 +2,7 @@
 import { existsSync } from 'fs';
 import { sep, normalize, resolve } from 'path';
 
-import { Compiler, Module } from 'webpack';
+import { Compiler, Module, Compilation, ChunkGraph } from 'webpack';
 
 const dir = __dirname;
 
@@ -94,6 +94,26 @@ function getAbsolutePath(compiler: Compiler, mmirDir: string, id: string) {
     return doGetAbsolutePath(compiler.options.context, [process.cwd(), dir, mmirDir], id);
 }
 
+function getWebpackModuleId(module: Module, chunkGraph: ChunkGraph){
+    if(chunkGraph && chunkGraph.getModuleId){
+        // for webpack5: use ChunkGraph API for retrieving module ID
+        return chunkGraph.getModuleId(module);
+    } else {
+        // otherwise: just return the module ID field
+        return module.id;
+    }
+}
+
+function setWebpackModuleId(module: Module, newId: string, chunkGraph: ChunkGraph){
+    if(chunkGraph && chunkGraph.getModuleId){
+        // for webpack5: use ChunkGraph API for setting module ID
+        return chunkGraph.setModuleId(module, newId);
+    } else {
+        // otherwise: just set the module ID field
+        return module.id = newId;
+    }
+}
+
 export interface FixedIdModule extends Module {
     libIdent(options: any): string;
 }
@@ -101,6 +121,8 @@ export interface FixedIdModule extends Module {
 //based on https://stackoverflow.com/a/34637718/4278324
 
 export class ReplaceModuleIdPlugin {
+
+    private _compilation?: Compilation;
 
     constructor(public alias: {[id: string]: string}, public mmirDir: string, public fileExtensions: RegExp) {
         this.alias = alias || {};
@@ -114,11 +136,12 @@ export class ReplaceModuleIdPlugin {
 
             const aliasLookup = this.alias;
             const fileExtensions = this.fileExtensions;
+            const compilation = this._compilation;
 
             // console.log('ReplaceModuleIdPlugin.beforeModuleIds: current dir "'+__dirname+'", mmir-lib dir "'+this.mmirDir+'", checking '+JSON.stringify(aliasLookup)); //DEBUG
 
             modules.forEach(function(module) {
-                if (module.id === null && module.libIdent) {
+                if (getWebpackModuleId(module, compilation.chunkGraph) === null && module.libIdent) {
 
                     const resolvedId: string = module.libIdent({
                         context: compiler.options.context
@@ -149,7 +172,7 @@ export class ReplaceModuleIdPlugin {
                             return id;
                         }
 
-                        module.id = id;
+                        setWebpackModuleId(module, id, compilation.chunkGraph);
                         // console.log('TEST replaced id result: ', id)
                     }
                     // else if(/mmirf\\controller\\/.test(aliasLookup)){
@@ -168,6 +191,9 @@ export class ReplaceModuleIdPlugin {
             });
         } else {
             compiler.hooks.compilation.tap('ReplaceModuleIdPlugin', compilation => {
+                // NOTE cannot just store compilation.chunkGraph, since at this point it is not initialized yet
+                //      -> store compilation itself: when beforeModuleIds hook is invoked, the compilation.chunkGraph should be available in webpack5
+                this._compilation = compilation;
                 compilation.hooks.beforeModuleIds.tap('ReplaceModuleIdPlugin', processModules);
             });
         }
