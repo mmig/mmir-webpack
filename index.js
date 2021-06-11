@@ -2,7 +2,6 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-const fs_1 = require("fs");
 const path_1 = require("path");
 const lodash_1 = require("lodash");
 const filepath_utils_1 = __importDefault(require("mmir-tooling/utils/filepath-utils"));
@@ -14,66 +13,17 @@ const webpack_worker_loader_utils_1 = __importDefault(require("./utils/webpack-w
 const webpack_plugin_replace_id_js_1 = require("./utils/webpack-plugin-replace-id.js");
 const webpack_resources_config_1 = __importDefault(require("./webpack-resources-config"));
 const cli_utils_1 = __importDefault(require("mmir-tooling/utils/cli-utils"));
+const webpack_resolve_utils_1 = require("./utils/webpack-resolve-utils");
 const log_utils_1 = __importDefault(require("mmir-tooling/utils/log-utils"));
 const log = log_utils_1.default.log;
 const warn = log_utils_1.default.warn;
 // log('mmir-lib: ', require('mmir-lib'))
+/** root directory of the mmir-lib package */
 const rootDir = path_1.dirname(require.resolve('mmir-lib'));
+/** root directory of the mmir-webpack package (i.e. this package) */
 const webpackRootDir = __dirname;
 // log('mmir-lib path: ', rootDir);
 // log('mmir-webpack path: ', webpackRootDir);
-/**
- *	expand require.js package definitions & add them to the alias dictionary
- *
- * TODO extract this function to mmir-tooling?
- *
- * @param  {string} rootDir the mmir root dir (usually node_modules/mmir-lib/lib/ )
- * @param  {{[id: string]: string}} alias dictionary for module ID/alias -> module-path (INOUT parameter)
- * @param  {Array<{name: string, location: string}>} resourcesConfigPackages list of require.js package definitions
- */
-function expandPackageResources(rootDir, alias, resourcesConfigPackages) {
-    var getFiles = function (dir, relDir, baseId) {
-        var files = fs_1.readdirSync(dir);
-        files.forEach(function (f) {
-            var absPath = path_1.join(dir, f);
-            var relPath = relDir ? path_1.join(relDir, f) : f;
-            if (filepath_utils_1.default.isDirectory(absPath)) {
-                getFiles(dir, relPath);
-            }
-            else {
-                //create id for file/module (without file-extension):
-                var fid = filepath_utils_1.default.normalizePath(path_1.join(baseId, path_1.basename(relPath, path_1.extname(relPath))));
-                alias[fid] = absPath;
-                // console.log('  added package module ', fid, ' -> ', absPath);
-            }
-        });
-    };
-    // list: Array<{name: string, location: string}>
-    resourcesConfigPackages.forEach(function (p) {
-        getFiles(path_1.join(rootDir, p.location), '', p.name);
-    });
-}
-function createResolveAlias(mmirAppConfig) {
-    var paths = webpack_resources_config_1.default.paths;
-    var alias = {}, p;
-    for (var n in paths) {
-        p = paths[n];
-        if (/^build-tool\//.test(n)) {
-            alias[n] = path_1.isAbsolute(p) ? p : path_1.join(webpackRootDir, p);
-        }
-        else {
-            alias[n] = path_1.isAbsolute(p) ? p : path_1.join(rootDir, p);
-        }
-    }
-    if (Array.isArray(webpack_resources_config_1.default.packages)) {
-        expandPackageResources(rootDir, alias, webpack_resources_config_1.default.packages);
-    }
-    webpack_module_init_gen_js_1.default.addAliasFrom(mmirAppConfig, alias);
-    if (mmirAppConfig.disableLogging) {
-        alias['mmirf/logger'] = alias['mmirf/loggerDisabled'];
-    }
-    return alias;
-}
 function enableJQuery(mmirAppConfig) {
     mmirAppConfig.jquery = true;
     var paths = webpack_resources_config_1.default.paths;
@@ -219,11 +169,13 @@ function createModuleRules(mmirAppConfig, buildConfig) {
         }
         mmirAppConfig.webpackPlugins.push(function (webpackInstance, alias) {
             return new webpackInstance.NormalModuleReplacementPlugin(/mmirf\/settings\/(configuration|dictionary|grammar|speech)\//i, function (resource) {
-                if (alias[resource.request]) {
-                    // log('NormalModuleReplacementPlugin: redirecting resource: ', resource, ' -> ', alias[resource.request]);//DEBU
-                    // resource.request = alias[resource.request];//DISABLED hard-rewire request ... instead, add an alias resolver (see below)
-                    var ca = {};
-                    ca[resource.request] = alias[resource.request];
+                const aliasEntry = webpack_resolve_utils_1.getAliasEntry(resource.request, alias);
+                if (aliasEntry) {
+                    // log('NormalModuleReplacementPlugin: redirecting resource: ', resource, ' -> ', aliasEntry);//DEBU
+                    // resource.request = aliasEntry;//DISABLED hard-rewire request ... instead, add an alias resolver (see below)
+                    const ca = {};
+                    const isExact = webpack_resolve_utils_1.isExactAliasEntry(resource.request, alias);
+                    webpack_resolve_utils_1.setAliasEntry(resource.request, aliasEntry, ca, isExact);
                     resource.resolveOptions = { alias: ca };
                 }
             });
@@ -261,7 +213,7 @@ function createPlugins(webpackInstance, alias, mmirAppConfig, buildConfig) {
             'module.config': ['build-tool/module-config-helper', 'config'],
         }),
         // ignore modules that are specific for running mmir in node environment:
-        new webpackInstance.IgnorePlugin({ resourceRegExp: /^xmlhttprequest|worker_threads$/ }),
+        new webpackInstance.IgnorePlugin({ resourceRegExp: /^(?:xmlhttprequest|worker_threads|webworker-threads)$/ }),
         // // FIXM ignore internal node modules that are often require'd in disabled node-detection code (-> emscripten etc):
         // new webpackInstance.IgnorePlugin({resourceRegExp: /^crypto|fs|path$/}),
         // set custom module-IDs from alias-definitions for mmir-modules (enables mmir.require(<moduleId>))
@@ -272,10 +224,17 @@ function createPlugins(webpackInstance, alias, mmirAppConfig, buildConfig) {
         }),
         // redirect entry-point of mmir-lib to the webpack bootstrap/entry point
         new webpackInstance.NormalModuleReplacementPlugin(/requirejs-main\.js/, function (resource) {
-            if (resource.rawRequest === 'mmir-lib') { //<- only redirect, if the file was requested via 'mmir-lib' (e.g. if requested directly via its path, do not redirect)
+            if (resource.rawRequest === 'mmir-lib' || /*FIX HACK webpack v5: no field rawRequest -> use field request, TODO proper migration */ resource.request === 'mmir-lib') { //<- only redirect, if the file was requested via 'mmir-lib' (e.g. if requested directly via its path, do not redirect)
                 // log('replacing module ', resource.request, ' -> ', join(webpackRootDir, 'webpack-main.js'))//, ', for ', resource);
                 resource.request = path_1.join(webpackRootDir, 'webpack-main.js');
+                // FIX webpack4: need to set resource.resource field:
                 resource.resource = resource.request;
+                // FIX webpack v5: need to set resource in field createData
+                //     see implementation details for NormalModuleReplacementPlugin
+                //     https://github.com/webpack/webpack/blob/ff1b314d30fbf996dc0acf37b7b789eab8ca33e1/lib/NormalModuleReplacementPlugin.js#L45
+                if (resource.createData) {
+                    resource.createData.resource = resource.request;
+                }
             }
             // else {
             // 	log('ingnoring module replacement for ', resource.request);
@@ -284,23 +243,30 @@ function createPlugins(webpackInstance, alias, mmirAppConfig, buildConfig) {
         // // redirect 'mmirf/util/fileLoader'
         new webpackInstance.NormalModuleReplacementPlugin(/^mmirf\/util\/loadFile(__webpack_proxied)?$/, function (resource) {
             if (/__webpack_proxied$/.test(resource.request)) {
-                var modPath = path_1.resolve(alias['mmirf/util'], 'loadFile.js');
+                var modPath = path_1.resolve(webpack_resolve_utils_1.getAliasEntry('mmirf/util', alias), 'loadFile.js');
                 // log('------------- replacing module ', resource.request, ' -> ', modPath);
                 resource.request = modPath;
             }
             else {
-                // log('############# replacing module ', resource.request, ' -> ', alias['mmirf/util/resourceLoader']);
-                resource.request = alias['mmirf/util/resourceLoader'];
+                // log('############# replacing module ', resource.request, ' -> ', getAliasEntry('mmirf/util/resourceLoader', alias));
+                resource.request = webpack_resolve_utils_1.getAliasEntry('mmirf/util/resourceLoader', alias);
+            }
+            // FIX webpack v5: need to set resource in field createData
+            if (resource.createData) {
+                resource.createData.resource = resource.request;
             }
         }),
         // FIXME somehow require-ing .ehtml resources (i.e. "mmirf/view/...") is not processed as module-request, so neither normal alias-resolving nor the replace-id plugin is triggered...
         //       ... hard-rewire the requires view-IDs to the
         new webpackInstance.NormalModuleReplacementPlugin(/mmirf\/(view|controller|grammar|helper|model|scxml)\//i, function (resource) {
-            if (alias[resource.request]) {
-                // log('NormalModuleReplacementPlugin: redirecting resource: ', resource, ' -> ', alias[resource.request]);
-                var ca = {};
-                ca[resource.request] = alias[resource.request];
+            const aliasEntry = webpack_resolve_utils_1.getAliasEntry(resource.request, alias);
+            if (aliasEntry) {
+                // log('NormalModuleReplacementPlugin: redirecting resource: ', resource, ' -> ', aliasEntry);
+                const ca = {};
+                const isExact = webpack_resolve_utils_1.isExactAliasEntry(resource.request, alias);
+                webpack_resolve_utils_1.setAliasEntry(resource.request, aliasEntry, ca, isExact);
                 resource.resolveOptions = { alias: ca };
+                // console.log('NormalModuleReplacementPlugin: redirecting resource: -> ', resource.resolveOptions);
             }
         }),
         // //TEST try to limit/tell webpack the restrictions of require() calls in order to avoid compilation warnings
@@ -478,6 +444,16 @@ function excludeFilesFromModuleRule(fileList, moduleRule) {
     }
 }
 ;
+function createIgnoreWepackWarningsFunction() {
+    return function (error, _compilation) {
+        var _a;
+        // console.log('ignoreWarnings', error);//, compilation);
+        if (/Critical dependency: require function is used in a way in which dependencies cannot be statically extracted/.test(error.message)) {
+            return ((_a = error === null || error === void 0 ? void 0 : error.module) === null || _a === void 0 ? void 0 : _a.libIdent('')) === 'mmirf/main';
+        }
+        return false;
+    };
+}
 /**
  * apply webpack configuration for mmir-lib to an existing webpack configuration
  *
@@ -489,7 +465,7 @@ function apply(webpackInstance, webpackConfig, mmirAppConfig) {
     // log('############################## webpack-version: ', JSON.stringify(webpackInstance.version))
     // log('############################## webpack instance: ', webpackInstance)
     cli_utils_1.default.parseCli();
-    var useRulesForLoaders = webpackInstance.version && parseFloat(webpackInstance.version) >= 4 ? true : false;
+    const useRulesForLoaders = webpackInstance.version && parseFloat(webpackInstance.version) >= 4 ? true : false;
     if (typeof mmirAppConfig === 'string') {
         mmirAppConfig = JSON.parse(mmirAppConfig);
     }
@@ -567,7 +543,7 @@ function apply(webpackInstance, webpackConfig, mmirAppConfig) {
         targetList.push(moduleRules[i]);
     }
     //add alias resolving:
-    const alias = createResolveAlias(mmirAppConfig);
+    const alias = webpack_resolve_utils_1.createResolveAlias(mmirAppConfig, rootDir, webpackRootDir);
     if (!webpackConfig.resolve) {
         webpackConfig.resolve = { alias: alias };
     }
@@ -592,6 +568,17 @@ function apply(webpackInstance, webpackConfig, mmirAppConfig) {
     }
     //add webworker loader configuration
     webpack_worker_loader_utils_1.default.apply(webpackConfig, rootDir, useRulesForLoaders);
+    //ignore known errors when compiling mmir-lib
+    const canIgnoreWarnings = webpackInstance.version && parseFloat(webpackInstance.version) >= 5 ? true : false;
+    if (canIgnoreWarnings) {
+        if (!webpackConfig.ignoreWarnings) {
+            webpackConfig.ignoreWarnings = [];
+        }
+        else if (!lodash_1.isArray(webpackConfig.ignoreWarnings)) {
+            webpackConfig.ignoreWarnings = [webpackConfig.ignoreWarnings];
+        }
+        webpackConfig.ignoreWarnings.push(createIgnoreWepackWarningsFunction());
+    }
     return webpackConfig;
 }
 ;
