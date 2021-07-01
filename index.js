@@ -205,6 +205,8 @@ function createModuleRules(mmirAppConfig, buildConfig) {
 function createPlugins(webpackInstance, alias, mmirAppConfig, buildConfig) {
     // var EncodingPlugin = require('webpack-encoding-plugin');
     // console.log('buildConfig', buildConfig)
+    const isWebpack3 = !webpackInstance.version || parseFloat(webpackInstance.version) <= 4 ? true : false;
+    const reIgnoreNodePlugins = /^(?:xmlhttprequest|worker_threads|webworker-threads)$/;
     var plugins = [
         // enable replacement implementation for requirejs' module.config()
         // NOTE: in difference to the requirejs implementation, this does need the module as first parameter, i.e. something like
@@ -213,7 +215,7 @@ function createPlugins(webpackInstance, alias, mmirAppConfig, buildConfig) {
             'module.config': ['build-tool/module-config-helper', 'config'],
         }),
         // ignore modules that are specific for running mmir in node environment:
-        new webpackInstance.IgnorePlugin({ resourceRegExp: /^(?:xmlhttprequest|worker_threads|webworker-threads)$/ }),
+        new webpackInstance.IgnorePlugin(!isWebpack3 ? { resourceRegExp: reIgnoreNodePlugins } : reIgnoreNodePlugins),
         // // FIXM ignore internal node modules that are often require'd in disabled node-detection code (-> emscripten etc):
         // new webpackInstance.IgnorePlugin({resourceRegExp: /^crypto|fs|path$/}),
         // set custom module-IDs from alias-definitions for mmir-modules (enables mmir.require(<moduleId>))
