@@ -71,8 +71,8 @@
   "peerDependencies": {
     "mmir-lib": "^7.0.0-beta4",
     "webpack": ">=3.0.0",
-    "file-loader": ">=3.0.0",
-    "raw-loader": ">=3.0.0",
+    "file-loader": ">=2.0.0",
+    "raw-loader": ">=0.5.0",
     "webpack-virtual-modules": ">=0.4.1",
     "val-loader": ">=1.1.1",
     "worker-loader": ">=2.0.0"

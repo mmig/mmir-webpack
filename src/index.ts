@@ -260,6 +260,9 @@ function createPlugins(webpackInstance: WebpackModule, alias: {[id: string]: str
 
     // console.log('buildConfig', buildConfig)
 
+    const isWebpack3 = !webpackInstance.version || parseFloat(webpackInstance.version) <= 4 ? true : false;
+    const reIgnoreNodePlugins = /^(?:xmlhttprequest|worker_threads|webworker-threads)$/;
+
     var plugins: Plugin[] = [
 
         // enable replacement implementation for requirejs' module.config()
@@ -270,7 +273,7 @@ function createPlugins(webpackInstance: WebpackModule, alias: {[id: string]: str
         }),
 
         // ignore modules that are specific for running mmir in node environment:
-        new webpackInstance.IgnorePlugin({resourceRegExp: /^(?:xmlhttprequest|worker_threads|webworker-threads)$/}),
+        new webpackInstance.IgnorePlugin(!isWebpack3? {resourceRegExp: reIgnoreNodePlugins} : reIgnoreNodePlugins as any),
 
         // // FIXM ignore internal node modules that are often require'd in disabled node-detection code (-> emscripten etc):
         // new webpackInstance.IgnorePlugin({resourceRegExp: /^crypto|fs|path$/}),
