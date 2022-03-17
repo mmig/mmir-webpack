@@ -12,9 +12,9 @@ const webpackDefaultPaths = {
     'mmirf/simpleViewEngine': 'env/view/stubViewEngine',
     //use non-jQuery utils by default:
     'mmirf/util': 'tools/util_purejs',
-    'mmirf/util/resourceLoader': path_1.resolve(__dirname, 'runtime', 'webpackLoadFile'),
-    'build-tool/module-config-helper': path_1.resolve(__dirname, 'runtime', 'moduleConfigImpl'),
-    'build-tool/webpack-helper-module-config': path_1.resolve(__dirname, 'runtime', 'webpackModuleUtils'),
-    'build-tool/webpack-app-config': path_1.resolve(__dirname, 'runtime', 'webpackModuleInit')
+    'mmirf/util/resourceLoader': (0, path_1.resolve)(__dirname, 'runtime', 'webpackLoadFile'),
+    'build-tool/module-config-helper': (0, path_1.resolve)(__dirname, 'runtime', 'moduleConfigImpl'),
+    'build-tool/webpack-helper-module-config': (0, path_1.resolve)(__dirname, 'runtime', 'webpackModuleUtils'),
+    'build-tool/webpack-app-config': (0, path_1.resolve)(__dirname, 'runtime', 'webpackModuleInit')
 };
-module.exports = create_resources_config_1.default(webpackRemovedPaths, webpackDefaultPaths);
+module.exports = (0, create_resources_config_1.default)(webpackRemovedPaths, webpackDefaultPaths);

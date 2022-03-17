@@ -19,7 +19,7 @@ const log = log_utils_1.default.log;
 const warn = log_utils_1.default.warn;
 // log('mmir-lib: ', require('mmir-lib'))
 /** root directory of the mmir-lib package */
-const rootDir = path_1.dirname(require.resolve('mmir-lib'));
+const rootDir = (0, path_1.dirname)(require.resolve('mmir-lib'));
 /** root directory of the mmir-webpack package (i.e. this package) */
 const webpackRootDir = __dirname;
 // log('mmir-lib path: ', rootDir);
@@ -34,7 +34,7 @@ function createModuleRules(mmirAppConfig, buildConfig) {
     //FIXME currently cannot include grammar.json as file because of json-grammar-loader TODO include same resouce multiple times with different formats(?) multi-loader?
     buildConfig.settings.forEach(function (s) {
         if (!s.exclude) {
-            if (lodash_1.isArray(s.file) && s.include !== 'inline') {
+            if ((0, lodash_1.isArray)(s.file) && s.include !== 'inline') {
                 warn('WARN settings-utils: encountered multiple file resources for "' + s.id + '" (' + s.type + '): cannot be included as (single) file, inlining  resources instead...');
                 s.include = 'inline';
             }
@@ -49,14 +49,14 @@ function createModuleRules(mmirAppConfig, buildConfig) {
         }
     });
     var mmirAppConfigContent = webpack_module_init_gen_js_1.default.generateModuleCode(mmirAppConfig);
-    var appConfigModulePath = filepath_utils_1.default.normalizePath(path_1.join(webpackRootDir, 'runtime', 'webpackModuleInit.js'));
+    var appConfigModulePath = filepath_utils_1.default.normalizePath((0, path_1.join)(webpackRootDir, 'runtime', 'webpackModuleInit.js'));
     // log('###### creating module webpack-app-module-config.js with contents: '+ JSON.stringify(mmirAppConfigContent));
     var binFilePaths = webpack_resources_config_1.default.fileResources.map(function (val) {
-        return filepath_utils_1.default.normalizePath(path_1.isAbsolute(val) ? val : path_1.join(rootDir, val));
+        return filepath_utils_1.default.normalizePath((0, path_1.isAbsolute)(val) ? val : (0, path_1.join)(rootDir, val));
     });
     //log('###### including as raw files: '+ binFilePaths);
     var textFilePaths = webpack_resources_config_1.default.textResources.map(function (val) {
-        return filepath_utils_1.default.normalizePath(path_1.isAbsolute(val) ? val : path_1.join(rootDir, val));
+        return filepath_utils_1.default.normalizePath((0, path_1.isAbsolute)(val) ? val : (0, path_1.join)(rootDir, val));
     });
     // log('###### including as text files: '+ textFilePaths);
     var fileResourcesPathMap = webpack_resources_config_1.default.resourcesPaths;
@@ -80,8 +80,8 @@ function createModuleRules(mmirAppConfig, buildConfig) {
                         }
                         else {
                             //otherwise: include as bare file-name
-                            log('  including [raw file] remapping include-path "' + file + '" -> ', path_1.basename(file));
-                            file = path_1.basename(file);
+                            log('  including [raw file] remapping include-path "' + file + '" -> ', (0, path_1.basename)(file));
+                            file = (0, path_1.basename)(file);
                         }
                         //do normalize path-separators to '/' for proper usage in JS code -> "var url = require(<file resource>)"
                         return filepath_utils_1.default.normalizePath(file);
@@ -122,7 +122,7 @@ function createModuleRules(mmirAppConfig, buildConfig) {
         moduleRules.push({
             test: filepath_utils_1.default.createFileTestFunc(buildConfig.grammars.map(function (g) { return g.file; }), ' for [grammar] files'),
             use: {
-                loader: path_1.resolve(webpackRootDir, 'loader', 'grammar-loader.js'),
+                loader: (0, path_1.resolve)(webpackRootDir, 'loader', 'grammar-loader.js'),
                 options: { mapping: buildConfig.grammars, config: buildConfig.grammarOptions },
             },
             type: 'javascript/auto'
@@ -133,7 +133,7 @@ function createModuleRules(mmirAppConfig, buildConfig) {
         moduleRules.push({
             test: filepath_utils_1.default.createFileTestFunc(buildConfig.views.map(function (v) { return v.file; }), ' for [view] files'),
             use: {
-                loader: path_1.resolve(webpackRootDir, 'loader', 'view-loader.js'),
+                loader: (0, path_1.resolve)(webpackRootDir, 'loader', 'view-loader.js'),
                 options: { mapping: buildConfig.views, config: buildConfig.viewOptions },
             },
             type: 'javascript/auto'
@@ -144,7 +144,7 @@ function createModuleRules(mmirAppConfig, buildConfig) {
         moduleRules.push({
             test: filepath_utils_1.default.createFileTestFunc(buildConfig.states.map(function (s) { return s.file; }), ' for [scxml] files'),
             use: {
-                loader: path_1.resolve(webpackRootDir, 'loader', 'scxml-loader.js'),
+                loader: (0, path_1.resolve)(webpackRootDir, 'loader', 'scxml-loader.js'),
                 options: { mapping: buildConfig.states, config: buildConfig.stateOptions },
             },
             type: 'javascript/auto'
@@ -156,7 +156,7 @@ function createModuleRules(mmirAppConfig, buildConfig) {
         moduleRules.push({
             test: filepath_utils_1.default.createFileTestFunc(buildConfig.implList.map(function (s) { return s.file; }), ' for [controller | helper | model] files'),
             use: {
-                loader: path_1.resolve(webpackRootDir, 'loader', 'impl-loader.js'),
+                loader: (0, path_1.resolve)(webpackRootDir, 'loader', 'impl-loader.js'),
                 options: { mapping: buildConfig.implList },
             },
             type: 'javascript/auto'
@@ -169,19 +169,19 @@ function createModuleRules(mmirAppConfig, buildConfig) {
         }
         mmirAppConfig.webpackPlugins.push(function (webpackInstance, alias) {
             return new webpackInstance.NormalModuleReplacementPlugin(/mmirf\/settings\/(configuration|dictionary|grammar|speech)\//i, function (resource) {
-                const aliasEntry = webpack_resolve_utils_1.getAliasEntry(resource.request, alias);
+                const aliasEntry = (0, webpack_resolve_utils_1.getAliasEntry)(resource.request, alias);
                 if (aliasEntry) {
                     // log('NormalModuleReplacementPlugin: redirecting resource: ', resource, ' -> ', aliasEntry);//DEBU
                     // resource.request = aliasEntry;//DISABLED hard-rewire request ... instead, add an alias resolver (see below)
                     const ca = {};
-                    const isExact = webpack_resolve_utils_1.isExactAliasEntry(resource.request, alias);
-                    webpack_resolve_utils_1.setAliasEntry(resource.request, aliasEntry, ca, isExact);
+                    const isExact = (0, webpack_resolve_utils_1.isExactAliasEntry)(resource.request, alias);
+                    (0, webpack_resolve_utils_1.setAliasEntry)(resource.request, aliasEntry, ca, isExact);
                     resource.resolveOptions = { alias: ca };
                 }
             });
         });
         moduleRules.push({
-            test: filepath_utils_1.default.createFileTestFunc(buildConfig.settings.filter(function (s) { return !lodash_1.isArray(s.file) && s.type !== 'grammar'; }).map(function (s) { return s.file; }), ' for [language resource] files'),
+            test: filepath_utils_1.default.createFileTestFunc(buildConfig.settings.filter(function (s) { return !(0, lodash_1.isArray)(s.file) && s.type !== 'grammar'; }).map(function (s) { return s.file; }), ' for [language resource] files'),
             use: {
                 loader: 'file-loader',
                 options: {
@@ -228,7 +228,7 @@ function createPlugins(webpackInstance, alias, mmirAppConfig, buildConfig) {
         new webpackInstance.NormalModuleReplacementPlugin(/requirejs-main\.js/, function (resource) {
             if (resource.rawRequest === 'mmir-lib' || /*FIX HACK webpack v5: no field rawRequest -> use field request, TODO proper migration */ resource.request === 'mmir-lib') { //<- only redirect, if the file was requested via 'mmir-lib' (e.g. if requested directly via its path, do not redirect)
                 // log('replacing module ', resource.request, ' -> ', join(webpackRootDir, 'webpack-main.js'))//, ', for ', resource);
-                resource.request = path_1.join(webpackRootDir, 'webpack-main.js');
+                resource.request = (0, path_1.join)(webpackRootDir, 'webpack-main.js');
                 // FIX webpack4: need to set resource.resource field:
                 resource.resource = resource.request;
                 // FIX webpack v5: need to set resource in field createData
@@ -245,13 +245,13 @@ function createPlugins(webpackInstance, alias, mmirAppConfig, buildConfig) {
         // // redirect 'mmirf/util/fileLoader'
         new webpackInstance.NormalModuleReplacementPlugin(/^mmirf\/util\/loadFile(__webpack_proxied)?$/, function (resource) {
             if (/__webpack_proxied$/.test(resource.request)) {
-                var modPath = path_1.resolve(webpack_resolve_utils_1.getAliasEntry('mmirf/util', alias), 'loadFile.js');
+                var modPath = (0, path_1.resolve)((0, webpack_resolve_utils_1.getAliasEntry)('mmirf/util', alias), 'loadFile.js');
                 // log('------------- replacing module ', resource.request, ' -> ', modPath);
                 resource.request = modPath;
             }
             else {
                 // log('############# replacing module ', resource.request, ' -> ', getAliasEntry('mmirf/util/resourceLoader', alias));
-                resource.request = webpack_resolve_utils_1.getAliasEntry('mmirf/util/resourceLoader', alias);
+                resource.request = (0, webpack_resolve_utils_1.getAliasEntry)('mmirf/util/resourceLoader', alias);
             }
             // FIX webpack v5: need to set resource in field createData
             if (resource.createData) {
@@ -261,12 +261,12 @@ function createPlugins(webpackInstance, alias, mmirAppConfig, buildConfig) {
         // FIXME somehow require-ing .ehtml resources (i.e. "mmirf/view/...") is not processed as module-request, so neither normal alias-resolving nor the replace-id plugin is triggered...
         //       ... hard-rewire the requires view-IDs to the
         new webpackInstance.NormalModuleReplacementPlugin(/mmirf\/(view|controller|grammar|helper|model|scxml)\//i, function (resource) {
-            const aliasEntry = webpack_resolve_utils_1.getAliasEntry(resource.request, alias);
+            const aliasEntry = (0, webpack_resolve_utils_1.getAliasEntry)(resource.request, alias);
             if (aliasEntry) {
                 // log('NormalModuleReplacementPlugin: redirecting resource: ', resource, ' -> ', aliasEntry);
                 const ca = {};
-                const isExact = webpack_resolve_utils_1.isExactAliasEntry(resource.request, alias);
-                webpack_resolve_utils_1.setAliasEntry(resource.request, aliasEntry, ca, isExact);
+                const isExact = (0, webpack_resolve_utils_1.isExactAliasEntry)(resource.request, alias);
+                (0, webpack_resolve_utils_1.setAliasEntry)(resource.request, aliasEntry, ca, isExact);
                 resource.resolveOptions = { alias: ca };
                 // console.log('NormalModuleReplacementPlugin: redirecting resource: -> ', resource.resolveOptions);
             }
@@ -354,7 +354,7 @@ function modifyModuleRuleFilters(moduleRules) {
         return;
     }
     var rawFilePaths = webpack_resources_config_1.default.fileResources.map(function (val) {
-        return filepath_utils_1.default.normalizePath(path_1.isAbsolute(val) ? val : path_1.join(rootDir, val));
+        return filepath_utils_1.default.normalizePath((0, path_1.isAbsolute)(val) ? val : (0, path_1.join)(rootDir, val));
     });
     moduleRules.forEach(function (rule) {
         // console.log('checking module.rule ', rule)
@@ -478,7 +478,7 @@ function apply(webpackInstance, webpackConfig, mmirAppConfig) {
         enableJQuery(mmirAppConfig);
     }
     // var resourcesConfig = require('./webpack-resources-config');
-    var buildConfig = create_build_config_1.createBuildConfig(mmirAppConfig, webpack_resources_config_1.default);
+    var buildConfig = (0, create_build_config_1.createBuildConfig)(mmirAppConfig, webpack_resources_config_1.default);
     if (typeof buildConfig === 'string') {
         throw new Error(buildConfig);
     }
@@ -545,7 +545,7 @@ function apply(webpackInstance, webpackConfig, mmirAppConfig) {
         targetList.push(moduleRules[i]);
     }
     //add alias resolving:
-    const alias = webpack_resolve_utils_1.createResolveAlias(mmirAppConfig, rootDir, webpackRootDir);
+    const alias = (0, webpack_resolve_utils_1.createResolveAlias)(mmirAppConfig, rootDir, webpackRootDir);
     if (!webpackConfig.resolve) {
         webpackConfig.resolve = { alias: alias };
     }
@@ -576,7 +576,7 @@ function apply(webpackInstance, webpackConfig, mmirAppConfig) {
         if (!webpackConfig.ignoreWarnings) {
             webpackConfig.ignoreWarnings = [];
         }
-        else if (!lodash_1.isArray(webpackConfig.ignoreWarnings)) {
+        else if (!(0, lodash_1.isArray)(webpackConfig.ignoreWarnings)) {
             webpackConfig.ignoreWarnings = [webpackConfig.ignoreWarnings];
         }
         webpackConfig.ignoreWarnings.push(createIgnoreWepackWarningsFunction());

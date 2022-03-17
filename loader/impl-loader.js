@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 const filepath_utils_1 = __importDefault(require("mmir-tooling/utils/filepath-utils"));
 const impl_gen_1 = __importDefault(require("mmir-tooling/impl/impl-gen"));
-const loaderUtils = require('loader-utils');
+const compat_utils_1 = require("../utils/compat-utils");
 module.exports = function (content, map, meta) {
     var callback = this.async();
-    var options = loaderUtils.getOptions(this) || {};
+    var options = (0, compat_utils_1.getLoaderOptions)(this) || {};
     // log('mmir-impl-loader: options -> ', options);//DEBU
     if (!options.mapping) {
         callback('failed to parse implementation: missing list for impl. settings [{id: "the ID", file: "the file path", ...}, ...]');

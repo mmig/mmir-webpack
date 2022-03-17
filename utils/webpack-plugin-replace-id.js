@@ -74,13 +74,13 @@ function getModId(modPaths, path, fileExtensions, originalId) {
     }
 }
 function doGetAbsolutePath(ctxPath, list, id) {
-    let fullpath = path_1.resolve(ctxPath, id);
-    if (fs_1.existsSync(fullpath)) {
+    let fullpath = (0, path_1.resolve)(ctxPath, id);
+    if ((0, fs_1.existsSync)(fullpath)) {
         return fullpath;
     }
     for (let i = 0, size = list.length - 1; i < size; ++i) {
-        fullpath = path_1.resolve(list[i], id);
-        if (fs_1.existsSync(fullpath)) {
+        fullpath = (0, path_1.resolve)(list[i], id);
+        if ((0, fs_1.existsSync)(fullpath)) {
             return fullpath;
         }
     }
@@ -131,7 +131,7 @@ class ReplaceModuleIdPlugin {
                     let lookUpId;
                     let id;
                     if (resolvedId) {
-                        id = path_1.normalize(resolvedId);
+                        id = (0, path_1.normalize)(resolvedId);
                         const fullpath = getAbsolutePath(compiler, this.mmirDir, id);
                         // console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ', id, ', fullpath ', fullpath); //, ', module ', module);//DEBUG
                         lookUpId = getModId(aliasLookup, fullpath, fileExtensions, id);
@@ -139,7 +139,7 @@ class ReplaceModuleIdPlugin {
                         // if(/mmir-plugin-/.test(id)) console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ',id, ', fullpath ', fullpath, ' -> ', lookUpId? lookUpId : 'UNKNOWN');//, ', module ', module);//DEBUG
                     }
                     else {
-                        log_utils_1.log('[INFO] ReplaceModuleIdPlugin.beforeModuleIds: not resolved ', module);
+                        (0, log_utils_1.log)('[INFO] ReplaceModuleIdPlugin.beforeModuleIds: not resolved ', module);
                     }
                     if (lookUpId) {
                         // console.log('ReplaceModuleIdPlugin.beforeModuleIds->forEach id ', id, ' -> ', normalizeLookUpId(lookUpId)); //, ', module ', module);//DEBUG
@@ -156,7 +156,7 @@ class ReplaceModuleIdPlugin {
                     // }
                 }
                 else if (process.env.verbose) {
-                    log_utils_1.log('[INFO] ReplaceModuleIdPlugin.beforeModuleIds: cannot process module ', module);
+                    (0, log_utils_1.log)('[INFO] ReplaceModuleIdPlugin.beforeModuleIds: cannot process module ', module);
                 }
             }, this);
         };

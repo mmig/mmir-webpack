@@ -6,7 +6,11 @@
  */
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -47,7 +51,7 @@ function generateFromAppConfig(mmirAppConfig) {
             var rePrefix = /^(mmirf\/)|mmir-plugin-/;
             moduleImplStr += 'var doIncludeModules = function(){\n' +
                 mmirAppConfig.includeModules.map(function (incl) {
-                    incl = rePrefix.test(incl) || fs_1.existsSync(incl) ? incl : 'mmirf/' + incl;
+                    incl = rePrefix.test(incl) || (0, fs_1.existsSync)(incl) ? incl : 'mmirf/' + incl;
                     return '  require.resolve("' + incl + '");';
                 }).join('\n') +
                 '\n};\n';
@@ -59,7 +63,7 @@ function generateFromAppConfig(mmirAppConfig) {
             var rePrefix = /^(mmirf\/)|mmir-plugin-/;
             moduleImplStr += 'var doLoadAfterInit = function(){\n' +
                 mmirAppConfig.loadAfterInit.map(function (incl) {
-                    incl = rePrefix.test(incl) || fs_1.existsSync(incl) ? incl : 'mmirf/' + incl;
+                    incl = rePrefix.test(incl) || (0, fs_1.existsSync)(incl) ? incl : 'mmirf/' + incl;
                     return '  require("' + incl + '");';
                 }).join('\n') +
                 '\n};\n';
@@ -71,7 +75,7 @@ function generateFromAppConfig(mmirAppConfig) {
             var rePrefix = /^(mmirf\/)|mmir-plugin-/;
             moduleImplStr += 'var doLoadBeforeInit = function(){\n' +
                 mmirAppConfig.loadBeforeInit.map(function (incl) {
-                    incl = rePrefix.test(incl) || fs_1.existsSync(incl) ? incl : 'mmirf/' + incl;
+                    incl = rePrefix.test(incl) || (0, fs_1.existsSync)(incl) ? incl : 'mmirf/' + incl;
                     return '  require("' + incl + '");';
                 }).join('\n') +
                 '\n};\n';
