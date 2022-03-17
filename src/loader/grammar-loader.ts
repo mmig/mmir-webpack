@@ -2,12 +2,12 @@
 import fileUtils from 'mmir-tooling/utils/filepath-utils';
 import grammarGen from 'mmir-tooling/grammar/grammar-gen';
 
-const loaderUtils = require('loader-utils');
+import { getLoaderOptions } from '../utils/compat-utils';
 
 const grammarLoader = function(content, map, meta) {
     var callback = this.async();
 
-    var options = loaderUtils.getOptions(this) || {};
+    var options = getLoaderOptions(this) || {};
     // log('mmir-grammer-loader: options -> ', options);//DEBUG
     if(!options || !options.mapping){
         callback('failed to parse JSON grammar: missing list for grammar settings [{id: "the ID", file: "the file path", ...}, ...]');
@@ -27,14 +27,14 @@ grammarLoader.pitch = function(_remainingRequest, _precedingRequest, _data) {
     // log('mmir-grammer-loader: PITCHing | remaining: ', _remainingRequest, ' | preceding: ', _precedingRequest, ' | data: ', _data);//DEBUG
     // log('mmir-grammer-loader: PITCHing options -> ',loaderUtils.getOptions(this));//DEBUG
 
-    var options = loaderUtils.getOptions(this);
+    var options = getLoaderOptions(this) || {};
     grammarGen.initPendingAsyncGrammarInfo(options);
 
     //HACK for webpack < 4.x the Rule.type property for indicating the conversion JSON -> javascript is not allowed
     //     -> for webpack >= 2.x the json-loader may register itself for the JSON grammar which would produce errors
     //        since it will receive the javascript code emitted by the grammar-loader
     //     WORKAROUND/HACK: try to detect json-loader, and remove it if present:
-    var options = loaderUtils.getOptions(this);
+    var options = getLoaderOptions(this) || {};
     if(options && options.isRuleTypeDisabled){//<- this will be set, if Rule.type had to be removed due to webpack version < 4.x
 
         if(!jsonLoaderPath){

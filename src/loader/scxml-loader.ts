@@ -2,12 +2,13 @@
 import fileUtils from 'mmir-tooling/utils/filepath-utils';
 import scxmlGen from 'mmir-tooling/scxml/scxml-gen';
 
-const loaderUtils = require('loader-utils');
+import { getLoaderOptions } from '../utils/compat-utils';
+
 
 export = function(content, map, meta) {
     var callback = this.async();
 
-    var options = loaderUtils.getOptions(this) || {};
+    var options = getLoaderOptions(this) || {};
     // log('mmir-scxml-loader: options -> ', options);//DEBU
 
     var scxmlFile = fileUtils.normalizePath(this.resource);
